@@ -1,0 +1,11 @@
+{
+  "name": "k_villages",
+  "version": "0.0.0",
+  "factorio_version": "0.14",
+  "title": "K Villages",
+  "author": "John K",
+  "contact": "jkeywo@yahoo.co.uk",
+  "homepage": "",
+  "description": "Find villages to renover and provide workers and warriors.",
+  "dependencies": ["base >= 0.14.0", "k_monuments >= 0.0.0"]
+}

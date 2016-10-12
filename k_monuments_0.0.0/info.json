@@ -1,0 +1,11 @@
+{
+  "name": "k_monuments",
+  "version": "0.0.0",
+  "factorio_version": "0.14",
+  "title": "KMonuments",
+  "author": "John K",
+  "contact": "jkeywo@yahoo.co.uk",
+  "homepage": "",
+  "description": "Adds landmarks in the world to discover and renovate.",
+  "dependencies": ["base >= 0.14.0"]
+}
