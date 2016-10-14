@@ -1,6 +1,6 @@
 register_momument({
     name = "default-pyramid",
-    distance = { 100, 150},
+    distance = { 10, 15},
     entity_name = "default-pyramid-vines",
     use_renovation_behaviour = true,
     renovated_entity_name = "default-pyramid",
@@ -18,7 +18,7 @@ register_momument({
   })
 register_momument({
     name = "default-statue",
-    distance = { 200, 250},
+    distance = { 20, 25},
     entity_name = "default-statue-vines",
     use_renovation_behaviour = true,
     renovated_entity_name = "default-statue",
@@ -36,7 +36,7 @@ register_momument({
   })
 register_momument({
     name = "default-temple",
-    distance = { 300, 350},
+    distance = { 30, 35},
     entity_name = "default-temple-vines",
     use_renovation_behaviour = true,
     renovated_entity_name = "default-temple",
@@ -55,7 +55,7 @@ register_momument({
 
 Event.register(defines.events.on_research_finished, function(event)
   local _ingredients = event.research.research_unit_ingredients
-  for _, _ingredient in _ingredients do
+  for _, _ingredient in pairs(_ingredients) do
     if _ingredient.name == "science-pack-1" then
       reveal_momument("default-pyramid")
     elseif _ingredient.name == "science-pack-2" then

@@ -26,8 +26,9 @@ if Config.enable_default_momuments then
           percent = 70
         }
       },
+      order = "a-b-a",
       collision_box = {{-1.9, -1.9}, {1.9, 1.9}},
-      selection_box = {{-1.9, -1.9}, {1.9, 1.9}},
+      selection_box = {{-1.5, -1.5}, {1.5, 1.5}},
       vehicle_impact_sound =  { filename = "__base__/sound/car-metal-impact.ogg", volume = 0.65 },
       working_sound =
       {
@@ -43,6 +44,16 @@ if Config.enable_default_momuments then
         },
         idle_sound = { filename = "__base__/sound/idle1.ogg", volume = 0.6 },
         apparent_volume = 1.5,
+      },
+      animation =
+      {
+        filename = "__k_monuments__/graphics/pyramid_vines.png",
+        priority = "high",
+        width = 70,
+        height = 77,
+        frame_count = 1,
+        line_length = 1,
+        shift = {0.4, -0.06}
       },
       energy_source =
       {
@@ -81,7 +92,7 @@ if Config.enable_default_momuments then
       corpse = "big-remnants",
       dying_explosion = "medium-explosion",
       collision_box = {{-1.9, -1.9}, {1.9, 1.9}},
-      selection_box = {{-1.9, -1.9}, {1.9, 1.9}},
+      selection_box = {{-1.5, -1.5}, {1.5, 1.5}},
       allowed_effects = {"consumption", "speed", "pollution"},
       base_picture =
       {
@@ -90,9 +101,10 @@ if Config.enable_default_momuments then
         height = 93,
         shift = { 0.34, 0.06}
       },
+      order = "a-b-a",
       animation =
       {
-        filename = "__base__/graphics/entity/basic-beacon/basic-beacon-antenna.png",
+        filename = "__base__/graphics/entity/beacon/beacon-antenna.png",
         width = 54,
         height = 50,
         line_length = 8,
@@ -102,7 +114,7 @@ if Config.enable_default_momuments then
       },
       animation_shadow =
       {
-        filename = "__base__/graphics/entity/basic-beacon/basic-beacon-antenna-shadow.png",
+        filename = "__base__/graphics/entity/beacon/beacon-antenna-shadow.png",
         width = 63,
         height = 49,
         line_length = 8,
@@ -112,7 +124,7 @@ if Config.enable_default_momuments then
       },
       radius_visualisation_picture =
       {
-        filename = "__base__/graphics/entity/basic-beacon/beacon-radius-visualization.png",
+        filename = "__base__/graphics/entity/beacon/beacon-radius-visualization.png",
         width = 48,
         height = 48
       },
@@ -135,7 +147,7 @@ if Config.enable_default_momuments then
     {
       type = "assembling-machine",
       name = "default-statue-vines",
-      icon = "__K_monuments__/graphics/statue_vines.png",
+      icon = "__k_monuments__/graphics/statue_vines.png",
       flags = { "placeable-neutral" },
       max_health = 250,
       corpse = "big-remnants",
@@ -147,7 +159,8 @@ if Config.enable_default_momuments then
           percent = 70
         }
       },
-      collision_box = {{-1.2, -1.2}, {1.2, 1.2}},
+      order = "a-b-a",
+      collision_box = {{-1.2, -1.9}, {1.2, 1.9}},
       selection_box = {{-1.5, -1.5}, {1.5, 1.5}},
       vehicle_impact_sound =  { filename = "__base__/sound/car-metal-impact.ogg", volume = 0.65 },
       working_sound =
@@ -164,6 +177,16 @@ if Config.enable_default_momuments then
         },
         idle_sound = { filename = "__base__/sound/idle1.ogg", volume = 0.6 },
         apparent_volume = 1.5,
+      },
+      animation =
+      {
+        filename = "__k_monuments__/graphics/statue_vines.png",
+        priority = "high",
+        width = 30,
+        height = 82,
+        frame_count = 1,
+        line_length = 1,
+        shift = {0.4, -0.06}
       },
       energy_source =
       {
@@ -202,7 +225,7 @@ if Config.enable_default_momuments then
       corpse = "big-remnants",
       dying_explosion = "medium-explosion",
       collision_box = {{-1.9, -1.9}, {1.9, 1.9}},
-      selection_box = {{-1.9, -1.9}, {1.9, 1.9}},
+      selection_box = {{-1.5, -1.5}, {1.5, 1.5}},
       allowed_effects = {"consumption", "speed", "pollution"},
       base_picture =
       {
@@ -211,9 +234,10 @@ if Config.enable_default_momuments then
         height = 93,
         shift = { 0.34, 0.06}
       },
+      order = "a-b-a",
       animation =
       {
-        filename = "__base__/graphics/entity/basic-beacon/basic-beacon-antenna.png",
+        filename = "__base__/graphics/entity/beacon/beacon-antenna.png",
         width = 54,
         height = 50,
         line_length = 8,
@@ -223,7 +247,7 @@ if Config.enable_default_momuments then
       },
       animation_shadow =
       {
-        filename = "__base__/graphics/entity/basic-beacon/basic-beacon-antenna-shadow.png",
+        filename = "__base__/graphics/entity/beacon/beacon-antenna-shadow.png",
         width = 63,
         height = 49,
         line_length = 8,
@@ -233,7 +257,7 @@ if Config.enable_default_momuments then
       },
       radius_visualisation_picture =
       {
-        filename = "__base__/graphics/entity/basic-beacon/beacon-radius-visualization.png",
+        filename = "__base__/graphics/entity/beacon/beacon-radius-visualization.png",
         width = 96,
         height = 96
       },
@@ -256,7 +280,7 @@ if Config.enable_default_momuments then
     {
       type = "assembling-machine",
       name = "default-temple-vines",
-      icon = "__K_monuments__/graphics/temple_vines.png",
+      icon = "__k_monuments__/graphics/temple_vines.png",
       flags = { "placeable-neutral" },
       max_health = 250,
       corpse = "big-remnants",
@@ -268,7 +292,8 @@ if Config.enable_default_momuments then
           percent = 70
         }
       },
-      collision_box = {{-1.2, -1.2}, {1.2, 1.2}},
+      order = "a-b-a",
+      collision_box = {{-1.9, -1.2}, {1.9, 1.2}},
       selection_box = {{-1.5, -1.5}, {1.5, 1.5}},
       vehicle_impact_sound =  { filename = "__base__/sound/car-metal-impact.ogg", volume = 0.65 },
       working_sound =
@@ -285,6 +310,16 @@ if Config.enable_default_momuments then
         },
         idle_sound = { filename = "__base__/sound/idle1.ogg", volume = 0.6 },
         apparent_volume = 1.5,
+      },
+      animation =
+      {
+        filename = "__k_monuments__/graphics/temple_vines.png",
+        priority = "high",
+        width = 73,
+        height = 53,
+        frame_count = 1,
+        line_length = 1,
+        shift = {0.4, -0.06}
       },
       energy_source =
       {
@@ -323,7 +358,7 @@ if Config.enable_default_momuments then
       corpse = "big-remnants",
       dying_explosion = "medium-explosion",
       collision_box = {{-1.9, -1.9}, {1.9, 1.9}},
-      selection_box = {{-1.9, -1.9}, {1.9, 1.9}},
+      selection_box = {{-1.5, -1.5}, {1.5, 1.5}},
       allowed_effects = {"consumption", "speed", "pollution"},
       base_picture =
       {
@@ -332,9 +367,10 @@ if Config.enable_default_momuments then
         height = 93,
         shift = { 0.34, 0.06}
       },
+      order = "a-b-a",
       animation =
       {
-        filename = "__base__/graphics/entity/basic-beacon/basic-beacon-antenna.png",
+        filename = "__base__/graphics/entity/beacon/beacon-antenna.png",
         width = 54,
         height = 50,
         line_length = 8,
@@ -344,7 +380,7 @@ if Config.enable_default_momuments then
       },
       animation_shadow =
       {
-        filename = "__base__/graphics/entity/basic-beacon/basic-beacon-antenna-shadow.png",
+        filename = "__base__/graphics/entity/beacon/beacon-antenna-shadow.png",
         width = 63,
         height = 49,
         line_length = 8,
@@ -354,7 +390,7 @@ if Config.enable_default_momuments then
       },
       radius_visualisation_picture =
       {
-        filename = "__base__/graphics/entity/basic-beacon/beacon-radius-visualization.png",
+        filename = "__base__/graphics/entity/beacon/beacon-radius-visualization.png",
         width = 144,
         height = 144
       },
