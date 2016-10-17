@@ -1,16 +1,37 @@
 
 require("config")
 
--- base -- assembly machine
--- recipe-category
--- recipe
--- restore-item
--- restored -- beacon
-
 if Config.enable_default_momuments then
 	-- add data for entities
   data:extend(
   {
+    {
+      type = "recipe-category",
+      name = "restore-pyramid",
+    },
+    {
+      type = "item",
+      name = "restored-pyramid",
+      icon = "__k_monuments__/graphics/pyramid_clean.png",
+      flags = {"goes-to-main-inventory"},
+      subgroup = "environment",
+      order = "z[restored-pyramid]",
+      stack_size = 1
+    },
+    {
+      type = "recipe",
+      name = "restore-pyramid",
+      enabled = true,
+      ingredients =
+      {
+        { "productivity-module", 5 },
+        { "speed-module", 5 },
+        { "effectivity-module", 5 },
+        { "alien-artifact", 50 }
+      },
+      result = "restored-pyramid",
+      category = { "restore-pyramid" }
+    },
     {
       type = "assembling-machine",
       name = "default-pyramid-vines",
@@ -64,24 +85,6 @@ if Config.enable_default_momuments then
       crafting_categories = { "restore-pyramid" },
       crafting_speed = 1.0,
       ingredient_count = 4,
-    },
-    {
-      type = "recipe-category",
-      name = "restore-pyramid",
-    },
-    {
-      type = "recipe",
-      name = "restore-pyramid",
-      enabled = true,
-      ingredients =
-      {
-        { "productivity-module", 5 },
-        { "speed-module", 5 },
-        { "effectivity-module", 5 },
-        { "alien-artifact", 50 }
-      },
-      result = "iron-ore",
-      category = { "restore-pyramid" }
     },
     {
       type = "beacon",
@@ -145,6 +148,33 @@ if Config.enable_default_momuments then
       }
     },
     {
+      type = "recipe-category",
+      name = "restore-statue",
+    },
+    {
+      type = "item",
+      name = "restored-statue",
+      icon = "__k_monuments__/graphics/statue_clean.png",
+      flags = {"goes-to-main-inventory"},
+      subgroup = "environment",
+      order = "z[restored-statue]",
+      stack_size = 1
+    },
+    {
+      type = "recipe",
+      name = "restore-statue",
+      enabled = true,
+      ingredients =
+      {
+        { "productivity-module-2", 10 },
+        { "speed-module-2", 10 },
+        { "effectivity-module-2", 10 },
+        { "alien-artifact", 100 }
+      },
+      result = "restored-statue",
+      category = { "restore-statue" }
+    },
+    {
       type = "assembling-machine",
       name = "default-statue-vines",
       icon = "__k_monuments__/graphics/statue_vines.png",
@@ -197,24 +227,6 @@ if Config.enable_default_momuments then
       crafting_categories = { "restore-statue" },
       crafting_speed = 1.0,
       ingredient_count = 4,
-    },
-    {
-      type = "recipe-category",
-      name = "restore-statue",
-    },
-    {
-      type = "recipe",
-      name = "restore-statue",
-      enabled = true,
-      ingredients =
-      {
-        { "productivity-module-2", 10 },
-        { "speed-module-2", 10 },
-        { "effectivity-module-2", 10 },
-        { "alien-artifact", 100 }
-      },
-      result = "iron-ore",
-      category = { "restore-statue" }
     },
     {
       type = "beacon",
@@ -278,6 +290,33 @@ if Config.enable_default_momuments then
       }
     },
     {
+      type = "recipe-category",
+      name = "restore-temple",
+    },
+    {
+      type = "item",
+      name = "restored-temple",
+      icon = "__k_monuments__/graphics/temple_clean.png",
+      flags = {"goes-to-main-inventory"},
+      subgroup = "environment",
+      order = "z[restored-temple]",
+      stack_size = 1
+    },
+    {
+      type = "recipe",
+      name = "restore-temple",
+      enabled = true,
+      ingredients =
+      {
+        { "productivity-module-3", 20 },
+        { "speed-module-3", 20 },
+        { "effectivity-module-3", 20 },
+        { "alien-artifact", 200 }
+      },
+      result = "restored-temple",
+      category = { "restore-temple" }
+    },
+    {
       type = "assembling-machine",
       name = "default-temple-vines",
       icon = "__k_monuments__/graphics/temple_vines.png",
@@ -330,24 +369,6 @@ if Config.enable_default_momuments then
       crafting_categories = { "restore-temple" },
       crafting_speed = 1.0,
       ingredient_count = 4,
-    },
-    {
-      type = "recipe-category",
-      name = "restore-temple",
-    },
-    {
-      type = "recipe",
-      name = "restore-temple",
-      enabled = true,
-      ingredients =
-      {
-        { "productivity-module-3", 20 },
-        { "speed-module-3", 20 },
-        { "effectivity-module-3", 20 },
-        { "alien-artifact", 200 }
-      },
-      result = "iron-ore",
-      category = { "restore-temple" }
     },
     {
       type = "beacon",

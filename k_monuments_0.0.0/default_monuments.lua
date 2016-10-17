@@ -1,56 +1,74 @@
 register_momument({
     name = "default-pyramid",
-    distance = { 10, 15},
     entity_name = "default-pyramid-vines",
-    use_renovation_behaviour = true,
-    renovated_entity_name = "default-pyramid",
-    renovate_item = "restored-pyramid",
-    on_restored = function( entity )
-      entity.force.character_running_speed_modifier = entity.force.character_running_speed_modifier + 1
-      -- TODO schedule biter attacks
-      game.print( "The pyramid has been restored! It acts as a powerful beacon and grants a speed bonus." )
-    end,
-    on_reverted = function( entity )
-      entity.force.character_running_speed_modifier = entity.force.character_running_speed_modifier - 1
-      -- TODO unschedule biter attacks
-      game.print( "The pyramid has been destroyed! Rebuild it to regain your bonuses." )
-    end
+    position = {
+      offset = { 10, 15},
+    }
+    restoration = {
+      restored_entity_name = "default-pyramid",
+      restored_item = "restored-pyramid",
+      on_restored = function( entity )
+        entity.force.character_running_speed_modifier = entity.force.character_running_speed_modifier + 1
+        game.print( "The pyramid has been restored! It acts as a powerful beacon and grants a speed bonus." )
+      end,
+      on_reverted = function( entity )
+        entity.force.character_running_speed_modifier = entity.force.character_running_speed_modifier - 1
+        game.print( "The pyramid has been destroyed! Rebuild it to regain your bonuses." )
+      end,
+      attract_biters = {
+        chance = { 0.0, 1.0 },
+        cycle = 300,
+        count = { 1, 30 },
+      }
+    }
   })
 register_momument({
     name = "default-statue",
-    distance = { 20, 25},
     entity_name = "default-statue-vines",
-    use_renovation_behaviour = true,
-    renovated_entity_name = "default-statue",
-    renovate_item = "restored-statue",
-    on_restored = function( entity )
-      entity.force.character_health_bonus = entity.force.character_health_bonus + 100
-      -- TODO schedule biter attacks
-      game.print( "The statue has been restored! It acts as a powerful beacon and grants a health bonus." )
-    end,
-    on_reverted = function( entity )
-      entity.force.character_health_bonus = entity.force.character_health_bonus - 100
-      -- TODO unschedule biter attacks
-      game.print( "The statue has been destroyed! Rebuild it to regain your bonuses." )
-    end
+    position = {
+      offset = { 20, 25},
+    }
+    restoration = {
+      restored_entity_name = "default-statue",
+      restored_item = "restored-statue",
+      on_restored = function( entity )
+        entity.force.character_health_bonus = entity.force.character_health_bonus + 100
+        game.print( "The statue has been restored! It acts as a powerful beacon and grants a health bonus." )
+      end,
+      on_reverted = function( entity )
+        entity.force.character_health_bonus = entity.force.character_health_bonus - 100
+        game.print( "The statue has been destroyed! Rebuild it to regain your bonuses." )
+      end,
+      attract_biters = {
+        chance = { 0.0, 1.0 },
+        cycle = 300,
+        count = { 1, 30 },
+      }
+    }
   })
 register_momument({
     name = "default-temple",
-    distance = { 30, 35},
     entity_name = "default-temple-vines",
-    use_renovation_behaviour = true,
-    renovated_entity_name = "default-temple",
-    renovate_item = "restored-temple",
-    on_restored = function( entity )
-      entity.force.character_inventory_slots_bonus = entity.force.character_inventory_slots_bonus + 20
-      -- TODO schedule biter attacks
-      game.print( "The temple has been restored! It acts as a powerful beacon and grants a inventory bonus." )
-    end,
-    on_reverted = function( entity )
-      entity.force.character_inventory_slots_bonus = entity.force.character_inventory_slots_bonus - 20
-      -- TODO unschedule biter attacks
-      game.print( "The temple has been destroyed! Rebuild it to regain your bonuses." )
-    end
+    position = {
+      offset = { 30, 35},
+    }
+    restoration = {
+      restored_entity_name = "default-temple",
+      restored_item = "restored-temple",
+      on_restored = function( entity )
+        entity.force.character_inventory_slots_bonus = entity.force.character_inventory_slots_bonus + 20
+        game.print( "The temple has been restored! It acts as a powerful beacon and grants a inventory bonus." )
+      end,
+      on_reverted = function( entity )
+        entity.force.character_inventory_slots_bonus = entity.force.character_inventory_slots_bonus - 20
+        game.print( "The temple has been destroyed! Rebuild it to regain your bonuses." )
+      end,
+      attract_biters = {
+        chance = { 0.0, 1.0 },
+        cycle = 300,
+        count = { 1, 30 },
+      }
+    }
   })
 
 Event.register(defines.events.on_research_finished, function(event)

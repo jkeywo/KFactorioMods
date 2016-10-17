@@ -11,54 +11,84 @@ require("stdlib.event.event")
 local monument_data = {}
 --{
 --  name = "name",
---  distance = { 100, 200 }, -- distance form the starting zone
---  surface = "nauvis", -- surface to create it on, defaults to nauvis
 --  entity_name = "entity", -- entity to create
 --  default_floor = "stone-path", -- floor to create under the monument
---  use_renovation_behaviour = true, -- should it use the renovation behaviour?
---  renovated_entity_name = "entity-restored", -- entity to turn into once revovated
---  renovate_item = "restored-entity", -- item required in the output inventory of the monument to restore
---  on_restored = function(entity) end, -- called when a monument is resotered
---  on_reverted = function(entity) end -- called when a restored monument is destroyed
+--  position = {
+--    center = { x=0, y=0 },      -- point around which to be generated
+--    offset = { 100, 200 }, -- distance from the center
+--    surface = "nauvis", -- surface to create it on, defaults to nauvis
+--  },
+--  restoration = {                     -- restoration behaviour, leave nil to disable
+--    restored_entity_name = "entity-restored", -- entity to turn into once restorated
+--    restored_item = "restored-entity", -- item required in the output inventory of the monument to restore
+--    on_restored = function(entity) end, -- called when a monument is resotered
+--    on_reverted = function(entity) end, -- called when a restored monument is destroyed
+--    attract_biters = {                  -- should biters periodically attack the restored monument, leave nil to disable
+--      chance = { 0.0, 1.0 },            -- chance of an attack, either a fixed chance or lerps with evolution
+--      cycle = 300,                      -- seconds between attacks, either a fixed time or lerps with evolution
+--      count = { 1, 30 },                -- biters per attack, either a fixed amountor lerps with evolution
+--    }
+--  }
 --}
 
 -- Functions
-function get_global_data( name )
-  local _data = monument_data[name]
-  global.momuments = global.momuments or {}
-  local _global_data = global.momuments[name] or nil
-  
+function lerp(range, t)
+  if type(range) == "table" then
+    return range[1] + ( t * (range[2] - range[1]) )
+  elseif type(range) == "number" then
+    return range
+  end
+  return nil
+end
+
+function position_from_data( data )
   --while not _global_data do
   -- resolve position to an actual position and store in global
     local _theta = math.random() * 2.0 * math.pi
-    local _distance = _data.distance[1] + ( math.random() * (_data.distance[2] - _data.distance[1]) )
+    local _distance = lerp(_data.position.offset, math.random() )
     local _position = 
         { x = math.cos(_theta) * _distance,
           y = math.sin(_theta) * _distance
         }
+    if _data.position.center then
+      _position.x = _position.x + _data.position.center.x
+      _position.y = _position.y + _data.position.center.y
+    end
     -- TODO check of position collides with another monument
     -- otherwise go for another trip around the loop
-    _global_data = {
-        generated = false,
-        position = _position
-      }
+    return _position
   --end
+  return nil
+end
+
+function get_surface( name_or_data )
+  if type(name_or_data) == "string" then
+    return game.surfaces[monument_data[name_or_data].position.surface or "nauvis"]
+  else
+    return game.surfaces[name_or_data.position.surface or "nauvis"]
+  end
+end
+
+function get_global_data( name )
+  global.momuments = global.momuments or {}
+  if global.momuments[name] then
+    return global.momuments[name]
+  end
   
+  local _data = monument_data[name]
+  local _global_data = {
+      generated = false,
+      position = position_from_data( _data )
+    }
   global.momuments[name] = _global_data
-  
-  --local _surface = game.surfaces[monument_data[name].surface or "nauvis"]
-  --if _surface.is_chunk_generated( global.momuments[data.name].position ) then
-  --  place_monument( data )
-  --end
-  
   return _global_data
 end
 
 function contains_monument( name, surface, area )
   local _global_data = get_global_data(name)
   local _position = _global_data.position
-  local _surface = game.surfaces[monument_data[name].surface or "nauvis"]
-  if Area.inside( area, _position ) and surface == _surface then
+  local _surface = get_surface(name)
+  if surface == _surface and Area.inside( area, _position ) then
     return true
   end
   return false
@@ -66,7 +96,7 @@ end
 
 function place_monument( data )
   local _global_data = get_global_data(data.name)
-  local _surface = game.surfaces[monument_data[data.name].surface or "nauvis"]
+  local _surface = get_surface(data)
   -- clear area of doodads and other entities
   local _surrounding_area = Position.expand_to_area( _global_data.position, 4 ) -- TODO entity.prototype.selection_box
   local _obstructions = _surface.find_entities(_surrounding_area)
@@ -82,11 +112,10 @@ function place_monument( data )
   end
   _surface.set_tiles(_tile_table)
   
-  -- TODO fix force, make the entity claimable
   local _monument = _surface.create_entity {
     name = monument_data[data.name].entity_name, 
     position = _global_data.position, 
-    force=game.players[1].force 
+    force = game.players[1].force -- TODO fix force, make the entity claimable
   } 
   _monument.destructible = false
   _monument.rotatable = false
@@ -99,6 +128,12 @@ end
 function register_momument( data )
   monument_data[data.name] = data
   get_global_data(data.name)
+  
+  -- place if already generated
+  --local _surface = game.surfaces[monument_data[name].surface or "nauvis"]
+  --if _surface.is_chunk_generated( global.momuments[data.name].position ) then
+  --  place_monument( data )
+  --end
 end
 
 function reveal_momument( name )
@@ -117,33 +152,44 @@ end
 function restore_monument( name )
   local _data = monument_data[name]
   local _position = global.momuments[name].position
-  local _surface = game.surfaces[_data.surface or "nauvis"]
-  local _entity = _surface.find_entity(_data.entity_name, _position)
-  if _entity then _entity.destroy() end
+  local _surface = get_surface(name)
+  local _force = game.player[1].force 
   
+  -- destroy existing entity
+  local _entity = _surface.find_entity( _data.entity_name, _position )
+  if _entity then 
+    _force = _entity.force
+    _entity.destroy() 
+  end
+  
+  -- replace with a new one
   local _new_entity = _surface.create_entity {
-    name = _data.renovated_entity_name, 
+    name = _data.restoration.restored_entity_name, 
     position = _position, 
-    force= game.player[1].force 
+    force = _force
   }
   _data.on_restored(_new_entity)
   global.momuments[name].restored = true
+  
+  game.print( name.." has been restored" )
 end
 
 function ruin_monument( name )
   local _data = monument_data[name]
   local _position = global.momuments[name].position
-  local _surface = game.surfaces[_data.surface or "nauvis"]
-  local _entity = _surface.find_entity(_data.renovated_entity_name, _position)
+  local _surface = get_surface(_data)
+  local _entity = _surface.find_entity(_data.restoration.restored_entity_name, _position)
   if _entity then _entity.destroy() end
 
   local _new_entity = event.surface.create_entity {
     name = _data.entity_name, 
     position = _position, 
-    force=game.player[1].force 
+    force = game.player[1].force 
   }
   _monument.on_reverted(_new_entity)
   global.momuments[name].restored = false
+  
+  game.print( name.." has fallen to ruin" )
 end
 
 -- Events
@@ -157,21 +203,21 @@ end)
 
 Event.register(defines.events.on_tick, function(event)
   for _, _monument in pairs(monument_data) do
-    if _monument.use_renovation_behaviour 
-        and global.momuments[_monument.name].generated then
-      if global.momuments[_monument.name].restored then
+    local _global_data = get_global_data(_monument)
+    if _monument.restoration and _global_data.generated then
+      if _global_data.restored then
         -- check to see if it's been destroyed
-        local _position = global.momuments[name].position
-        local _surface = game.surfaces[monument_data[name].surface or "nauvis"]
-        local _entity = _surface.find_entity(_monument.renovated_entity_name, _position)
+        local _position = _global_data.position
+        local _surface = get_surface( _monument )
+        local _entity = _surface.find_entity(_monument.restoration.restored_entity_name, _position)
         if not _entity then
           destroy_monument( _monument.name )
         end
       else
         -- check if restoring task is done, then restore
-        local _entity = _surface.find_entity(_monument.entity_name, _position)
+        local _entity = _surface.find_entity( _monument.entity_name, _position )
         if _entity and _entity.get_output_inventory() 
-            and _entity.get_output_inventory().find_item_stack(_monument.renovate_item) then
+            and _entity.get_output_inventory().find_item_stack(_monument.restoration.restored_item) then
           restore_monument( _monument.name )
         end
       end
