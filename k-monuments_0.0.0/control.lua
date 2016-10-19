@@ -1,9 +1,11 @@
-register_momument({
+require("stdlib.event.event")
+
+remote.call("k-monuments-base", "register_momument", {
     name = "default-pyramid",
     entity_name = "default-pyramid-vines",
     position = {
       offset = { 10, 15},
-    }
+    },
     restoration = {
       restored_entity_name = "default-pyramid",
       restored_item = "restored-pyramid",
@@ -22,12 +24,12 @@ register_momument({
       }
     }
   })
-register_momument({
+remote.call("k-monuments-base", "register_momument", ({
     name = "default-statue",
     entity_name = "default-statue-vines",
     position = {
       offset = { 20, 25},
-    }
+    },
     restoration = {
       restored_entity_name = "default-statue",
       restored_item = "restored-statue",
@@ -46,12 +48,12 @@ register_momument({
       }
     }
   })
-register_momument({
+remote.call("k-monuments-base", "register_momument", ({
     name = "default-temple",
     entity_name = "default-temple-vines",
     position = {
       offset = { 30, 35},
-    }
+    },
     restoration = {
       restored_entity_name = "default-temple",
       restored_item = "restored-temple",

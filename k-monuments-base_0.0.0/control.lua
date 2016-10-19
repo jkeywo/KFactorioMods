@@ -1,6 +1,4 @@
 
-require("config")
-
 -- std lib
 require("stdlib.area.area")
 require("stdlib.area.chunk")
@@ -45,20 +43,19 @@ function position_from_data( data )
   --while not _global_data do
   -- resolve position to an actual position and store in global
     local _theta = math.random() * 2.0 * math.pi
-    local _distance = lerp(_data.position.offset, math.random() )
+    local _distance = lerp(data.position.offset, math.random() )
     local _position = 
         { x = math.cos(_theta) * _distance,
           y = math.sin(_theta) * _distance
         }
-    if _data.position.center then
-      _position.x = _position.x + _data.position.center.x
-      _position.y = _position.y + _data.position.center.y
+    if data.position.center then
+      _position.x = _position.x + data.position.center.x
+      _position.y = _position.y + data.position.center.y
     end
     -- TODO check of position collides with another monument
     -- otherwise go for another trip around the loop
     return _position
   --end
-  return nil
 end
 
 function get_surface( name_or_data )
@@ -76,6 +73,7 @@ function get_global_data( name )
   end
   
   local _data = monument_data[name]
+  if not _data then game.print("ERROR: missing monument data for "..name) return nil end
   local _global_data = {
       generated = false,
       position = position_from_data( _data )
@@ -86,6 +84,7 @@ end
 
 function contains_monument( name, surface, area )
   local _global_data = get_global_data(name)
+  if not _global_data then return false end
   local _position = _global_data.position
   local _surface = get_surface(name)
   if surface == _surface and Area.inside( area, _position ) then
@@ -96,6 +95,7 @@ end
 
 function place_monument( data )
   local _global_data = get_global_data(data.name)
+  if not _global_data then return end
   local _surface = get_surface(data)
   -- clear area of doodads and other entities
   local _surrounding_area = Position.expand_to_area( _global_data.position, 4 ) -- TODO entity.prototype.selection_box
@@ -204,7 +204,7 @@ end)
 Event.register(defines.events.on_tick, function(event)
   for _, _monument in pairs(monument_data) do
     local _global_data = get_global_data(_monument)
-    if _monument.restoration and _global_data.generated then
+    if _global_data and _monument.restoration and _global_data.generated then
       if _global_data.restored then
         -- check to see if it's been destroyed
         local _position = _global_data.position
@@ -225,13 +225,8 @@ Event.register(defines.events.on_tick, function(event)
   end
 end)
 
--- Default Monuments
-if Config.enable_default_momuments then
-  require("default_monuments")
-end
-
 -- Script Interface
-remote.add_interface("k_momuments", {
+remote.add_interface("k-momuments-base", {
   register_momument = function( data )
     register_momument( data )
   end,

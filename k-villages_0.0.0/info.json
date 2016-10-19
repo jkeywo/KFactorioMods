@@ -1,0 +1,11 @@
+{
+  "name": "k-villages",
+  "version": "0.0.0",
+  "factorio_version": "0.14",
+  "title": "KVillages",
+  "description": "Two villages to discover, each with an additional monument.",
+  "author": "John K",
+  "contact": "jkeywo@yahoo.co.uk",
+  "homepage": "",
+  "dependencies": ["base >= 0.14.0", "k-villages-base >= 0.0.0", "k-monuments-base >= 0.0.0"]
+}

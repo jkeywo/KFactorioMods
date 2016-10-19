@@ -1,0 +1,11 @@
+{
+  "name": "k-worlds-base",
+  "version": "0.0.0",
+  "factorio_version": "0.14",
+  "title": "KWorlds - Base",
+  "description": "A library to allow mod authors to create additional worlds easily.",
+  "author": "John K",
+  "contact": "jkeywo@yahoo.co.uk",
+  "homepage": "",
+  "dependencies": ["base >= 0.14.0"]
+}

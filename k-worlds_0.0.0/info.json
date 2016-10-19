@@ -1,0 +1,11 @@
+{
+  "name": "k-worlds",
+  "version": "0.0.0",
+  "factorio_version": "0.14",
+  "title": "KWorlds",
+  "description": "Three extra worlds to explore.",
+  "author": "John K",
+  "contact": "jkeywo@yahoo.co.uk",
+  "homepage": "",
+  "dependencies": ["base >= 0.14.0", "k-worlds-base >= 0.0.0"]
+}

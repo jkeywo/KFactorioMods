@@ -1,11 +1,11 @@
 {
-  "name": "k_monuments",
+  "name": "k-composite-entities",
   "version": "0.0.0",
   "factorio_version": "0.14",
-  "title": "KMonuments",
+  "title": "KCompositeEntities",
+  "description": "A library to allow mod authors to create multiple entities that act like one.",
   "author": "John K",
   "contact": "jkeywo@yahoo.co.uk",
   "homepage": "",
-  "description": "Adds landmarks in the world to discover and renovate.",
   "dependencies": ["base >= 0.14.0"]
 }

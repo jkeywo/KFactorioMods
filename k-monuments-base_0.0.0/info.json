@@ -1,0 +1,11 @@
+{
+  "name": "k-monuments-base",
+  "version": "0.0.0",
+  "factorio_version": "0.14",
+  "title": "KMonuments - Base",
+  "description": "A library to allow mod authors to add landmarks to the game. It inclues supports for dicovery, rennovation and a few other features.",
+  "author": "John K",
+  "contact": "jkeywo@yahoo.co.uk",
+  "homepage": "",
+  "dependencies": ["base >= 0.14.0"]
+}
