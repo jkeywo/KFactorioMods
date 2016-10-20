@@ -8,7 +8,7 @@ data:extend(
   {
     type = "item",
     name = "restored-pyramid",
-    icon = "__k_monuments__/graphics/pyramid_clean.png",
+    icon = "__k-monuments__/graphics/pyramid_clean.png",
     flags = {"goes-to-main-inventory"},
     order = "z[restored-pyramid]",
     stack_size = 1
@@ -30,7 +30,7 @@ data:extend(
   {
     type = "assembling-machine",
     name = "default-pyramid-vines",
-    icon = "__k_monuments__/graphics/pyramid_vines.png",
+    icon = "__k-monuments__/graphics/pyramid_vines.png",
     flags = { "placeable-neutral" },
     max_health = 250,
     corpse = "big-remnants",
@@ -63,7 +63,7 @@ data:extend(
     },
     animation =
     {
-      filename = "__k_monuments__/graphics/pyramid_vines.png",
+      filename = "__k-monuments__/graphics/pyramid_vines.png",
       priority = "high",
       width = 70,
       height = 77,
@@ -84,7 +84,7 @@ data:extend(
   {
     type = "beacon",
     name = "default-pyramid",
-    icon = "__k_monuments__/graphics/pyramid_clean.png",
+    icon = "__k-monuments__/graphics/pyramid_clean.png",
     flags = { "placeable-neutral" },
     max_health = 1000,
     corpse = "big-remnants",
@@ -94,7 +94,7 @@ data:extend(
     allowed_effects = {"consumption", "speed", "pollution"},
     base_picture =
     {
-      filename = "__k_monuments__/graphics/pyramid_clean.png",
+      filename = "__k-monuments__/graphics/pyramid_clean.png",
       width = 116,
       height = 93,
       shift = { 0.34, 0.06}
@@ -149,7 +149,7 @@ data:extend(
   {
     type = "item",
     name = "restored-statue",
-    icon = "__k_monuments__/graphics/statue_clean.png",
+    icon = "__k-monuments__/graphics/statue_clean.png",
     flags = {"goes-to-main-inventory"},
     order = "z[restored-statue]",
     stack_size = 1
@@ -171,7 +171,7 @@ data:extend(
   {
     type = "assembling-machine",
     name = "default-statue-vines",
-    icon = "__k_monuments__/graphics/statue_vines.png",
+    icon = "__k-monuments__/graphics/statue_vines.png",
     flags = { "placeable-neutral" },
     max_health = 250,
     corpse = "big-remnants",
@@ -204,7 +204,7 @@ data:extend(
     },
     animation =
     {
-      filename = "__k_monuments__/graphics/statue_vines.png",
+      filename = "__k-monuments__/graphics/statue_vines.png",
       priority = "high",
       width = 30,
       height = 82,
@@ -225,7 +225,7 @@ data:extend(
   {
     type = "beacon",
     name = "default-statue",
-    icon = "__k_monuments__/graphics/statue_clean.png",
+    icon = "__k-monuments__/graphics/statue_clean.png",
     flags = { "placeable-neutral" },
     max_health = 1000,
     corpse = "big-remnants",
@@ -235,7 +235,7 @@ data:extend(
     allowed_effects = {"consumption", "speed", "pollution"},
     base_picture =
     {
-      filename = "__k_monuments__/graphics/statue_clean.png",
+      filename = "__k-monuments__/graphics/statue_clean.png",
       width = 116,
       height = 93,
       shift = { 0.34, 0.06}
@@ -290,7 +290,7 @@ data:extend(
   {
     type = "item",
     name = "restored-temple",
-    icon = "__k_monuments__/graphics/temple_clean.png",
+    icon = "__k-monuments__/graphics/temple_clean.png",
     flags = {"goes-to-main-inventory"},
     order = "z[restored-temple]",
     stack_size = 1
@@ -312,7 +312,7 @@ data:extend(
   {
     type = "assembling-machine",
     name = "default-temple-vines",
-    icon = "__k_monuments__/graphics/temple_vines.png",
+    icon = "__k-monuments__/graphics/temple_vines.png",
     flags = { "placeable-neutral" },
     max_health = 250,
     corpse = "big-remnants",
@@ -345,7 +345,7 @@ data:extend(
     },
     animation =
     {
-      filename = "__k_monuments__/graphics/temple_vines.png",
+      filename = "__k-monuments__/graphics/temple_vines.png",
       priority = "high",
       width = 73,
       height = 53,
@@ -366,7 +366,7 @@ data:extend(
   {
     type = "beacon",
     name = "default-temple",
-    icon = "__k_monuments__/graphics/temple_clean.png",
+    icon = "__k-monuments__/graphics/temple_clean.png",
     flags = { "placeable-neutral" },
     max_health = 1000,
     corpse = "big-remnants",
@@ -376,7 +376,7 @@ data:extend(
     allowed_effects = {"consumption", "speed", "pollution"},
     base_picture =
     {
-      filename = "__k_monuments__/graphics/temple_clean.png",
+      filename = "__k-monuments__/graphics/temple_clean.png",
       width = 116,
       height = 93,
       shift = { 0.34, 0.06}

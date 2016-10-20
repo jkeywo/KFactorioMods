@@ -9,28 +9,31 @@ require("stdlib.event.event")
 local monument_data = {}
 --{
 --  name = "name",
---  entity_name = "entity", -- entity to create
---  default_floor = "stone-path", -- floor to create under the monument
+--  parent_mod_name = "k-monuments",
+--  entity_name = "entity-name",      -- entity to create
+--  default_floor = "stone-path",     -- floor to create under the monument
+--  flooring_area = 4,
 --  position = {
---    center = { x=0, y=0 },      -- point around which to be generated
---    offset = { 100, 200 }, -- distance from the center
---    surface = "nauvis", -- surface to create it on, defaults to nauvis
+--    center = { x=0, y=0 },          -- point around which to be generated
+--    offset = { 100, 200 },          -- distance from the center
+--    surface = "nauvis",             -- surface to create it on, defaults to nauvis
 --  },
---  restoration = {                     -- restoration behaviour, leave nil to disable
---    restored_entity_name = "entity-restored", -- entity to turn into once restorated
---    restored_item = "restored-entity", -- item required in the output inventory of the monument to restore
---    on_restored = function(entity) end, -- called when a monument is resotered
---    on_reverted = function(entity) end, -- called when a restored monument is destroyed
---    attract_biters = {                  -- should biters periodically attack the restored monument, leave nil to disable
---      chance = { 0.0, 1.0 },            -- chance of an attack, either a fixed chance or lerps with evolution
---      cycle = 300,                      -- seconds between attacks, either a fixed time or lerps with evolution
---      count = { 1, 30 },                -- biters per attack, either a fixed amountor lerps with evolution
+--  upgrades = {                      -- upgrades, leave nil to disable
+--    {
+--      entity_name = "entity-mk2",   -- entity to turn into once restorated
+--      upgrade_item = "upgrade-entity", -- item required in the output inventory of the monument to upgrade
+--      attract_biters = {            -- should biters periodically attack the restored monument, leave nil to disable
+--        chance = { 0.0, 1.0 },      -- chance of an attack, either a fixed chance or lerps with evolution
+--        cycle = 300,                -- seconds between attacks, either a fixed time or lerps with evolution
+--        count = { 1, 30 },          -- biters per attack, either a fixed amountor lerps with evolution
+--      }
 --    }
 --  }
 --}
+local queued_monuments_to_place = {}
 
 -- Functions
-function lerp(range, t)
+local function lerp(range, t)
   if type(range) == "table" then
     return range[1] + ( t * (range[2] - range[1]) )
   elseif type(range) == "number" then
@@ -39,26 +42,15 @@ function lerp(range, t)
   return nil
 end
 
-function position_from_data( data )
-  --while not _global_data do
-  -- resolve position to an actual position and store in global
-    local _theta = math.random() * 2.0 * math.pi
-    local _distance = lerp(data.position.offset, math.random() )
-    local _position = 
-        { x = math.cos(_theta) * _distance,
-          y = math.sin(_theta) * _distance
-        }
-    if data.position.center then
-      _position.x = _position.x + data.position.center.x
-      _position.y = _position.y + data.position.center.y
-    end
-    -- TODO check of position collides with another monument
-    -- otherwise go for another trip around the loop
-    return _position
-  --end
+local function queue_event(monument_data, event_data)
+  if monument_data and monument_data.parent_mod_name then
+    global.event_queue = global.event_queue or {}
+    global.event_queue[monument_data.parent_mod_name] = global.event_queue[monument_data.parent_mod_name] or {}
+    table.insert( global.event_queue[monument_data.parent_mod_name], event_data)
+  end
 end
 
-function get_surface( name_or_data )
+local function get_monument_surface( name_or_data )
   if type(name_or_data) == "string" then
     return game.surfaces[monument_data[name_or_data].position.surface or "nauvis"]
   else
@@ -66,39 +58,23 @@ function get_surface( name_or_data )
   end
 end
 
-function get_global_data( name )
-  global.momuments = global.momuments or {}
-  if global.momuments[name] then
-    return global.momuments[name]
-  end
-  
-  local _data = monument_data[name]
-  if not _data then game.print("ERROR: missing monument data for "..name) return nil end
-  local _global_data = {
-      generated = false,
-      position = position_from_data( _data )
-    }
-  global.momuments[name] = _global_data
-  return _global_data
-end
-
-function contains_monument( name, surface, area )
-  local _global_data = get_global_data(name)
-  if not _global_data then return false end
-  local _position = _global_data.position
-  local _surface = get_surface(name)
-  if surface == _surface and Area.inside( area, _position ) then
+local function contains_monument( name, surface, area )
+  local _global_data = global.monuments[name]
+  if not _global_data then game.print("ERROR: Missing global data in 'contains_monument'") return false end
+  if surface == get_monument_surface(name) and Area.inside( area, _global_data.position ) then
     return true
   end
   return false
 end
 
-function place_monument( data )
-  local _global_data = get_global_data(data.name)
-  if not _global_data then return end
-  local _surface = get_surface(data)
+local function place_monument( data )
+  local _global_data = global.monuments[data.name]
+  if not _global_data then game.print("ERROR: Missing global data in 'contains_monument'") return false end
+  
+  local _surface = get_monument_surface(data)
+  local _surrounding_area = Position.expand_to_area( _global_data.position, data.flooring_area or 4 )
+  
   -- clear area of doodads and other entities
-  local _surrounding_area = Position.expand_to_area( _global_data.position, 4 ) -- TODO entity.prototype.selection_box
   local _obstructions = _surface.find_entities(_surrounding_area)
   for _, _obstruction in pairs(_obstructions) do
     _obstruction.destroy()
@@ -106,91 +82,161 @@ function place_monument( data )
   -- place down the default flooring
   local _tile_table = {}
   local _floor_type = data.default_floor or "stone-path"
-  
   for x,y in Area.iterate( _surrounding_area ) do
     table.insert(_tile_table, { name = _floor_type, position = {x=x, y=y}} )
   end
   _surface.set_tiles(_tile_table)
   
+  -- create the moument
   local _monument = _surface.create_entity {
     name = monument_data[data.name].entity_name, 
     position = _global_data.position, 
-    force = game.players[1].force -- TODO fix force, make the entity claimable
+    force = game.players[1].force -- TODO fix force, make the monuments claimable
   } 
   _monument.destructible = false
   _monument.rotatable = false
   _monument.minable = false
   
-  global.momuments[data.name].generated = true
-  global.momuments[data.name].restored = false
+  _global_data.generated = true
+  
+  queue_event( data, {
+    type = "placed",
+    name = data.name,
+    entity = _monument
+    })
+
 end
 
-function register_momument( data )
+local function register_monument( data )
   monument_data[data.name] = data
-  get_global_data(data.name)
+  
+  global.monuments = global.monuments or {}
+  if global.monuments[data.name] then
+    return global.monuments[data.name]
+  end
+  -- if there is no global data, initialise
+  
+  -- calculate position
+  -- TODO check of position collides with another monument
+  --      otherwise go for another trip around the loop
+  local _theta = math.random() * 2.0 * math.pi
+  local _distance = lerp(data.position.offset, math.random() )
+  local _position = 
+      { x = math.cos(_theta) * _distance,
+        y = math.sin(_theta) * _distance
+      }
+  if data.position.center then
+    _position.x = _position.x + data.position.center.x
+    _position.y = _position.y + data.position.center.y
+  end
+  
+  -- generate global data
+  local _global_data = {
+      generated = false,
+      position = _position,
+      rank = 0
+    }
+  global.monuments[data.name] = _global_data
   
   -- place if already generated
-  --local _surface = game.surfaces[monument_data[name].surface or "nauvis"]
-  --if _surface.is_chunk_generated( global.momuments[data.name].position ) then
-  --  place_monument( data )
-  --end
+  local _surface = get_monument_surface(data)
+  if _surface.is_chunk_generated( Chunk.from_position(_position) ) then
+    queued_monuments_to_place[ data.name ] = true
+  end
 end
 
-function reveal_momument( name )
-  if not monument_data[name] then
+local function reveal_monument( name )
+  if not monument_data[name] or not global.monuments[name] then
+    game.print("ERROR: Missing monument in 'reveal_monument'")
     return
   end
-  if global.momuments[name].generated then
+  if global.monuments[name].generated then
     return
   end
-  local _surface = game.surfaces[monument_data[name].surface or "nauvis"]
-  game.print( name.." has been revealed" )
-  
-  _surface.request_to_generate_chunks( Chunk.from_position( global.momuments[name].position ), 1 )
+ 
+  local _surface = get_monument_surface(name)
+  _surface.request_to_generate_chunks( Chunk.from_position( global.monuments[name].position ), 1 )
+
+  game.print( name.." has been revealed!" )
 end
 
-function restore_monument( name )
+local function upgrade_monument( name )
   local _data = monument_data[name]
-  local _position = global.momuments[name].position
-  local _surface = get_surface(name)
-  local _force = game.player[1].force 
+  local _global_data = global.monuments[name]
+  local _surface = get_monument_surface(_data)
+  local _force = game.player[1].force
   
   -- destroy existing entity
-  local _entity = _surface.find_entity( _data.entity_name, _position )
+  local _entity = _surface.find_entity( _data.entity_name, _global_data.position )
   if _entity then 
     _force = _entity.force
     _entity.destroy() 
   end
   
+  _global_data.rank = _global_data.rank + 1
+  
   -- replace with a new one
   local _new_entity = _surface.create_entity {
-    name = _data.restoration.restored_entity_name, 
-    position = _position, 
+    name = _data.upgrades[_global_data.rank].entity_name,
+    position = _global_data.position,
     force = _force
   }
-  _data.on_restored(_new_entity)
-  global.momuments[name].restored = true
+  _new_entity.rotatable = false
+  _new_entity.minable = false
+
+  -- queue an event
+  queue_event( _data, {
+        type = "upgrade",
+        name = name,
+        entity = _new_entity,
+        rank = _global_data.rank
+        })
   
   game.print( name.." has been restored" )
 end
 
-function ruin_monument( name )
+local function downgrade_monument( name )
   local _data = monument_data[name]
-  local _position = global.momuments[name].position
-  local _surface = get_surface(_data)
-  local _entity = _surface.find_entity(_data.restoration.restored_entity_name, _position)
-  if _entity then _entity.destroy() end
-
-  local _new_entity = event.surface.create_entity {
-    name = _data.entity_name, 
-    position = _position, 
-    force = game.player[1].force 
-  }
-  _monument.on_reverted(_new_entity)
-  global.momuments[name].restored = false
+  local _global_data = global.monuments[name]
+  local _surface = get_monument_surface(name)
+  local _force = game.player[1].force
   
-  game.print( name.." has fallen to ruin" )
+  local _entity = _surface.find_entity(_data.upgrades[_global_data.rank].entity_name, _global_data.position)
+  if _entity then
+    _force = _entity.force
+    _entity.destroy()
+  end
+  
+  _global_data.rank = _global_data.rank - 1
+  
+  local _new_entity = nil
+  if _global_data.rank <= 0 then
+    _new_entity = _surface.create_entity {
+      name = monument_data[data.name].entity_name, 
+      position = _global_data.position,
+      force = _force
+    }
+    _new_entity.destructible = false
+  else
+    _new_entity = _surface.create_entity {
+      name = _data.upgrades[_global_data.rank].entity_name,
+      position = _global_data.position,
+      force = _force
+    }
+  end
+  _new_entity.rotatable = false
+  _new_entity.minable = false
+
+  queue_event( _data, {
+    type = "downgrade",
+    name = name,
+    entity = _new_entity,
+    rank = _global_data.rank
+    })
+  
+  game.print( name.." has fallen" )
 end
+
 
 -- Events
 Event.register(defines.events.on_chunk_generated, function(event)
@@ -202,42 +248,61 @@ Event.register(defines.events.on_chunk_generated, function(event)
 end)
 
 Event.register(defines.events.on_tick, function(event)
+    -- TODO cache off current entity for monument
+  for _name, _ in  pairs(queued_monuments_to_place) do
+    place_monument( monument_data[_name] )
+  end
+  queued_monuments_to_place = {}
+    
   for _, _monument in pairs(monument_data) do
-    local _global_data = get_global_data(_monument)
-    if _global_data and _monument.restoration and _global_data.generated then
-      if _global_data.restored then
-        -- check to see if it's been destroyed
-        local _position = _global_data.position
-        local _surface = get_surface( _monument )
-        local _entity = _surface.find_entity(_monument.restoration.restored_entity_name, _position)
-        if not _entity then
-          destroy_monument( _monument.name )
-        end
+    local _global_data = global.monuments[_monument.name]
+    if _global_data and _global_data.generated and _monument.upgrades then
+      -- check to see if it's been destroyed
+      local _position = _global_data.position
+      local _surface = get_monument_surface( _monument )
+      local _expected_name = _global_data.rank == 0 and _monument.entity_name or _monument.upgrades[_global_data.rank].entity_name
+      local _entity = _surface.find_entity(_expected_name, _position)
+      if not _entity then
+        downgrade_monument( _monument.name )
       else
-        -- check if restoring task is done, then restore
-        local _entity = _surface.find_entity( _monument.entity_name, _position )
-        if _entity and _entity.get_output_inventory() 
-            and _entity.get_output_inventory().find_item_stack(_monument.restoration.restored_item) then
-          restore_monument( _monument.name )
+        -- check if upgrade item is in our inventory
+        local _next_rank = _global_data.rank + 1
+        if _entity and _entity.get_output_inventory() and _monument.upgrades[_next_rank]
+            and _entity.get_output_inventory().find_item_stack(_monument.upgrades[_next_rank].upgrade_item) then
+          upgrade_monument( _monument.name )
         end
       end
     end
   end
 end)
 
+Event.register(defines.events.on_entity_died, function(event)
+  -- downgrade
+  -- TODO cache off current monument for entity
+  -- downgrade_monument( "" )
+end)
+
 -- Script Interface
-remote.add_interface("k-momuments-base", {
-  register_momument = function( data )
-    register_momument( data )
+remote.add_interface("k-monuments", {
+  register_monument = function( data )
+    register_monument( data )
   end,
-  reveal_momument = function( name )
-    reveal_momument( name )
+  reveal_monument = function( name )
+    reveal_monument( name )
   end,
-  restore_momument = function( name )
-    restore_momument( name )
+  upgrade_monument = function( name )
+    upgrade_monument( name )
   end,
-  ruin_momument = function( name )
-    ruin_momument( name )
+  downgrade_monument = function( name )
+    downgrade_monument( name )
+  end,
+  get_events = function( parent_mod_name )
+    global.event_queue = global.event_queue or {}
+    return global.event_queue[parent_mod_name]
+  end,
+  clear_events = function( parent_mod_name )
+    global.event_queue = global.event_queue or {}
+    global.event_queue[parent_mod_name] = nil
   end
  })
 
