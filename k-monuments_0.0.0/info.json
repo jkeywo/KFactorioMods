@@ -2,10 +2,10 @@
   "name": "k-monuments",
   "version": "0.0.0",
   "factorio_version": "0.14",
-  "title": "KMonuments",
-  "description": "Three monuments to discover.",
+  "title": "KMonuments - Lib",
+  "description": "A library to allow mod authors to add landmarks to the game. It inclues supports for dicovery, rennovation and a few other features.",
   "author": "John K",
   "contact": "jkeywo@yahoo.co.uk",
   "homepage": "",
-  "dependencies": ["base >= 0.14.0", "k-monuments-base >= 0.0.0"]
+  "dependencies": ["base >= 0.14.0"]
 }

@@ -10,8 +10,8 @@
   "dependencies": [
     "base >= 0.14.0", 
     "k-composite-entities >= 0.0.0", 
-    "k-worlds-base >= 0.0.0", 
-    "k-monuments-base >= 0.0.0", 
+    "k-worlds >= 0.0.0", 
+    "k-monuments >= 0.0.0", 
     "k-villages-base >= 0.0.0"
   ]
 }
