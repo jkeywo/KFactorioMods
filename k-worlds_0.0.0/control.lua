@@ -1,8 +1,13 @@
 
+-- std lib
 require("stdlib.event.event")
 
+-- 
+require("world-control")
+require("transporter-control")
+
 local world_data = {}
--- {
+-- [""] = {
 --   surface_name = "",       -- Surface name, also used internally as the world name.
 --   localised_name = "",     -- Localised name tag.
 --   locked = false,          -- Starts locked?
@@ -20,7 +25,7 @@ local world_data = {}
 --   unlocked = false
 -- }
 local transporter_data = {}
--- {
+-- [""] = {
 --  entity_name = "",
 --  is_cave = "",                 -- world name
 --  travel_type = "",             -- "teleport", "sequential", "rocket"
@@ -39,7 +44,7 @@ local transporter_data = {}
 
 local starting_world = "nauvis"
 local default_off_autoplace = {}
-local players_loading = {}
+local pending_teleports = {}
 
 -- Functions
 local function set_starting_world( name )
@@ -50,17 +55,49 @@ local function get_starting_surface()
   return game.surfaces[ starting_world ]
 end
 
-local function teleport_to_world( world, player )
-	if world == nil then
-		player.teleport( player.position, game.surfaces[starting_world] )
-		return
-	end
-	world.surface.request_to_generate_chunks( player.position, 0 )
-	player.teleport( player.position, world.surface )
+local function teleport_to_world( world, player, position )
+  pending_teleports[player.index] = pending_teleports[player.index] or {
+      player = player
+    }
+    
+  local _surface = (world and world.surface) or world or get_starting_surface()
+  local _position = position or player.position
+  pending_teleports[player.index].surface = _surface
+  pending_teleports[player.index].position = _position
+  
+	world.surface.request_to_generate_chunks( Chunk.from_position( _position ), 4 )
+end
+
+local function cancel_teleport_to_world( player )
+  pending_teleports[player.index] = nil
+  if player.gui.center.loadingscreen then
+    player.gui.center.loadingscreen.destroy()
+  end
 end
 
 local function register_world( data )
-  world_data[data.name] = data
+  world_data[data.surface_name] = data
+  
+  local nauvis = game.surfaces["nauvis"];
+  local map_gen = table.deepcopy( nauvis.map_gen_settings )
+  
+  map_gen.terrain_segmentation = data.map_gen_settings.terrain_segmentation or map_gen.terrain_segmentation
+  map_gen.water = data.map_gen_settings.water or map_gen.water
+  map_gen.seed = data.map_gen_settings.seed or map_gen.seed
+  map_gen.shift = data.map_gen_settings.shift or map_gen.shift
+  map_gen.width = data.map_gen_settings.width or map_gen.width
+  map_gen.height = data.map_gen_settings.height or map_gen.height
+  map_gen.starting_area = data.map_gen_settings.starting_area or map_gen.starting_area
+  map_gen.peaceful_mode = data.map_gen_settings.peaceful_mode or map_gen.peaceful_mode
+  
+  for _control, _ in pairs(default_off_autoplace) do
+    map_gen.autoplace_controls[_control] =  { frequency = "none", size = "none", richness = "none" }
+  end
+  for _name, _control in pairs(data.map_gen_settings.autoplace_controls) do
+    map_gen.autoplace_controls[_name] =  _control
+  end
+  
+  game.create_surface( data.surface_name, map_gen )
 end
 
 local function register_transporter( data )
@@ -77,28 +114,30 @@ end
 Event.register(defines.events.on_tick, function( event )
   local _new_list = {}
   local _surface = get_starting_surface()
-  for _, _player in pairs(players_loading) do
-    if _surface.is_chunk_generated( Chunk.from_position( _player.position ) ) then
+  for _, _data in pairs(pending_teleports) do
+    local _player = _data.player
+    if _data.surface.is_chunk_generated( Chunk.from_position( _data.position ) ) then
       if _player.gui.center.loadingscreen then
         _player.gui.center.loadingscreen.destroy()
       end
-      teleport_to_world( starting_world, _player )
+      if not _player.teleport( _data.position, _data.surface ) then
+        _player.print("Teleport failed, target invalid");
+      end
     else
       -- update loading screen
       if not _player.gui.center.loadingscreen then
-        _player.gui.center.add( {type="label", name="loadingscreen", caption="Additional Loading... please do no touch the controls"} )
+        _player.gui.center.add( {type="label", name="loadingscreen", caption="Additional Loading... please wait"} )
       end
       table.insert( _new_list, _player )
     end
   end
-  players_loading = _new_list
+  pending_teleports = _new_list
 end)
 
 Event.register(defines.events.on_player_created, function(event)
   local player = game.players[event.player_index]
   if player.surface.name == "nauvis" and starting_world ~= "nauvis" then
-    get_starting_surface().request_to_generate_chunks( Chunk.from_position( player.position ), 4 )
-    table.insert( players_loading, player )
+    teleport_to_world( starting_world, player )
   end
 end)
 
