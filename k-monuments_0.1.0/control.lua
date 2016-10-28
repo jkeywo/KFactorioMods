@@ -19,9 +19,8 @@ local monument_data = {}
 --    surface = "nauvis",             -- surface to create it on, defaults to nauvis
 --  },
 --  upgrades = {                      -- upgrades, leave nil to disable
---    {
+--    ["upgrade-entity"] = {          -- item required in the output inventory of the monument to upgrade
 --      entity_name = "entity-mk2",   -- entity to turn into once restorated
---      upgrade_item = "upgrade-entity", -- item required in the output inventory of the monument to upgrade
 --      attract_biters = {            -- should biters periodically attack the restored monument, leave nil to disable
 --        chance = { 0.0, 1.0 },      -- chance of an attack, either a fixed chance or lerps with evolution
 --        cycle = 300,                -- seconds between attacks, either a fixed time or lerps with evolution
@@ -30,7 +29,7 @@ local monument_data = {}
 --    }
 --  }
 --}
-local queued_monuments_to_place = {}
+local finalise_list = {}
 
 -- Functions
 local function lerp(range, t)
@@ -91,7 +90,7 @@ local function place_monument( data )
   local _monument = _surface.create_entity {
     name = monument_data[data.name].entity_name, 
     position = _global_data.position, 
-    force = game.players[1].force -- TODO fix force, make the monuments claimable
+    force = game.players[1].force, -- TODO fix force, make the monuments claimable
   } 
   _monument.destructible = false
   _monument.rotatable = false
@@ -108,10 +107,17 @@ local function place_monument( data )
 end
 
 local function register_monument( data )
+  monument_data[data.name] = data
+  finalise_list[ data.name ] = true
+end
+
+local function finalise_registration( name )
+  local _data = monument_data[name]
   global.monuments = global.monuments or {}
-  if global.monuments[data.name] then
+  if global.monuments[_data.name] then
     return
   end
+  
   -- if there is no global data, initialise
   
   -- calculate position
@@ -121,14 +127,14 @@ local function register_monument( data )
     _escape = _escape + 1
     
     local _theta = math.random() * 2.0 * math.pi
-    local _distance = lerp(data.position.offset, math.random() )
+    local _distance = lerp(_data.position.offset, math.random() )
     local _position = 
         { x = math.cos(_theta) * _distance,
           y = math.sin(_theta) * _distance
         }
-    if data.position.center then
-      _position.x = _position.x + data.position.center.x
-      _position.y = _position.y + data.position.center.y
+    if _data.position.center then
+      _position.x = _position.x + _data.position.center.x
+      _position.y = _position.y + _data.position.center.y
     end
     -- check for collisions with other monuments (within 20 tiles)
     local _valid = true
@@ -142,7 +148,7 @@ local function register_monument( data )
     end
   end
   if not _final_position then
-    game.print("ERROR: Failed to register monument "..data.name..", could not find a valid position.")
+    game.print("ERROR: Failed to register monument "..name..", could not find a valid position.")
     return
   end
   
@@ -150,15 +156,15 @@ local function register_monument( data )
   local _global_data = {
       generated = false,
       position = _final_position,
-      rank = 0
+      upgrade = nil,
+      entity_name = _data.entity_name
     }
-  monument_data[data.name] = data
-  global.monuments[data.name] = _global_data
+  global.monuments[name] = _global_data
   
   -- place if already generated
-  local _surface = get_monument_surface(data)
+  local _surface = get_monument_surface(_data)
   if _surface.is_chunk_generated( Chunk.from_position(_final_position) ) then
-    queued_monuments_to_place[ data.name ] = true
+    place_monument( _data )
   end
 end
 
@@ -172,19 +178,24 @@ local function reveal_monument( name )
   end
  
   local _surface = get_monument_surface(name)
-  _surface.request_to_generate_chunks( Chunk.from_position( global.monuments[name].position ), 1 )
+  local _chunk_position = Chunk.from_position( global.monuments[name].position )
+  _surface.request_to_generate_chunks( _chunk_position, 1 )
+
+  for _, _force in pairs(game.forces) do
+    _force.chart( _surface, Chunk.to_area(_chunk_position) )
+  end
 
   game.print({"reveal-monument."..name})
 end
 
-local function upgrade_monument( name )
+local function upgrade_monument( name, upgrade_name )
   local _data = monument_data[name]
-  if not _data or not _data.upgrades or _data.upgrades[_global_data.rank + 1] then
-    game.print("ERROR: No valud upgrade found for monument "..name)
+  local _global_data = global.monuments[name]
+  if not _data or not _data.upgrades or not _data.upgrades[upgrade_name] then
+    game.print("ERROR: No valid upgrade found for monument "..name.." (target "..upgrade_name..")")
     return
   end
   
-  local _global_data = global.monuments[name]
   local _surface = get_monument_surface(_data)
   local _force = game.players[1].force
   
@@ -195,9 +206,7 @@ local function upgrade_monument( name )
     _entity.destroy() 
   end
   
-  _global_data.rank = _global_data.rank + 1
-  
-  local _upgrade_data = _data.upgrades[_global_data.rank]
+  local _upgrade_data = _data.upgrades[upgrade_name]
   -- replace with a new one
   local _new_entity = _surface.create_entity {
     name = _upgrade_data.entity_name,
@@ -206,13 +215,14 @@ local function upgrade_monument( name )
   }
   _new_entity.rotatable = false
   _new_entity.minable = false
+  _global_data.upgrade = upgrade_name
+  _global_data.entity_name = _upgrade_data.entity_name
 
   -- queue an event
   queue_event( _data, {
         type = "upgrade",
         name = name,
-        entity = _new_entity,
-        rank = _global_data.rank
+        entity = _new_entity
       })
     
   if _upgrade_data.attract_biters then
@@ -226,56 +236,35 @@ end
 
 local function downgrade_monument( name )
   local _global_data = global.monuments[name]
-  if _global_data.rank == 0 then
-    game.print("ERROR: Cannot downgrade rank 0 monument "..name)
-    return
-  end
 
   local _data = monument_data[name]
   local _surface = get_monument_surface(name)
   local _force = game.players[1].force
   
-  local _entity_name = _data.upgrades[_global_data.rank].entity_name
-  local _entity_position = _global_data.position
-  
-  local _entity = _surface.find_entity( _entity_name, _entity_position )
+  local _entity = _surface.find_entity( _global_data.entity_name, _global_data.position )
   if _entity then
     _force = _entity.force
     _entity.destroy()
   end
   
-  _global_data.rank = _global_data.rank - 1
-  
   local _new_entity = nil
-  if _global_data.rank <= 0 then
-    _new_entity = _surface.create_entity {
-      name = monument_data[name].entity_name, 
-      position = _global_data.position,
-      force = _force
-    }
-    _global_data.attract_biters_at = nil
-    _new_entity.destructible = false
-  else
-    local _upgrade_data = _data.upgrades[_global_data.rank]
-    _new_entity = _surface.create_entity {
-      name = _upgrade_data.entity_name,
-      position = _global_data.position,
-      force = _force
-    }
-    if _upgrade_data.attract_biters then
-      _global_data.attract_biters_at = game.tick + lerp( _upgrade_data.attract_biters.cycle, game.evolution_factor )
-    else
-      _global_data.attract_biters_at = nil
-    end
-  end
+  _new_entity = _surface.create_entity {
+    name = monument_data[name].entity_name, 
+    position = _global_data.position,
+    force = _force
+  }
+  _new_entity.destructible = false
   _new_entity.rotatable = false
   _new_entity.minable = false
+
+  _global_data.upgrade = nil
+  _global_data.entity_name = _data.entity_name
+  _global_data.attract_biters_at = nil
 
   queue_event( _data, {
     type = "downgrade",
     name = name,
-    entity = _new_entity,
-    rank = _global_data.rank
+    entity = _new_entity
     })
   
   game.print({"downgrade-monument."..name})
@@ -292,38 +281,37 @@ end)
 
 Event.register(defines.events.on_tick, function(event)
     -- TODO cache off current entity for monument
-  for _name, _ in  pairs(queued_monuments_to_place) do
-    place_monument( monument_data[_name] )
+  for _name, _ in  pairs(finalise_list) do
+    finalise_registration( _name )
   end
-  queued_monuments_to_place = {}
-    
+  finalise_list = {}
+
   for _, _monument in pairs(monument_data) do
     local _global_data = global.monuments[_monument.name]
     if _global_data and _global_data.generated and _monument.upgrades then
       -- check to see if it's been destroyed
       local _position = _global_data.position
       local _surface = get_monument_surface( _monument )
-      local _expected_name = _global_data.rank == 0 and _monument.entity_name or _monument.upgrades[_global_data.rank].entity_name
-      local _entity = _surface.find_entity(_expected_name, _position)
+      local _entity = _surface.find_entity(_global_data.entity_name, _position)
       if not _entity then
         downgrade_monument( _monument.name )
       else
         -- check if upgrade item is in our inventory
-        local _next_rank = _global_data.rank + 1
-        if _entity and _entity.get_output_inventory() and _monument.upgrades[_next_rank]
-            and _entity.get_output_inventory().find_item_stack(_monument.upgrades[_next_rank].upgrade_item) then
-          upgrade_monument( _monument.name )
+        if _entity and _entity.get_output_inventory() then
+          for _item_name, _ in pairs(_monument.upgrades) do
+            if _entity.valid and _entity.get_output_inventory().find_item_stack(_item_name) then
+              upgrade_monument( _monument.name, _item_name )
+            end
+          end
         end
       end
     end
     if _global_data and _global_data.attract_biters_at == game.tick then
-      local _biter_data = _monument.upgrades[_global_data.rank].attract_biters
+      local _biter_data = _monument.upgrades[_global_data.upgrade].attract_biters
       
       if lerp( _biter_data.chance, game.evolution_factor ) > math.random() then
-        local _position = _global_data.position
         local _surface = get_monument_surface( _monument )
-        local _expected_name = _global_data.rank == 0 and _monument.entity_name or _monument.upgrades[_global_data.rank].entity_name
-        local _entity = _surface.find_entity(_expected_name, _position)
+        local _entity = _surface.find_entity(_global_data.entity_name, _global_data.position)
 
         local _unit_count = lerp( _biter_data.count, game.evolution_factor )
  				_surface.set_multi_command{command = {type=defines.command.attack, target=_entity, distraction=defines.distraction.by_enemy},unit_count = _unit_count, unit_search_distance = 600}

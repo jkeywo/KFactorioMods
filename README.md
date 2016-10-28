@@ -1,10 +1,13 @@
 # KFactorioMods
 A series of factorio mods
 
-## KMonuments
-WIP - v0.0.0
-Generates several mouments in the world to discover and rennovate for unique rewards.
-Acts as a library to allow other mods to add unique monuments too.
+## KMonuments - Lib
+WIP - v0.1.0
+Acts as a library to allow other mods to add unique monuments.
+
+## KMonuments - Ruins
+WIP - v0.1.0
+Generates several monuments in the world to discover and rennovate for unique rewards.
 
 ## KVillages
 WIP - v0.0.0

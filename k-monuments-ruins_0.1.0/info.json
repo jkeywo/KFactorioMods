@@ -1,11 +1,11 @@
 {
   "name": "k-monuments-ruins",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "factorio_version": "0.14",
   "title": "KMonuments - Ruins",
   "description": "Three ancient ruins to discover and restore.",
   "author": "John K",
   "contact": "jkeywo@yahoo.co.uk",
   "homepage": "",
-  "dependencies": ["base >= 0.14.0", "k-monuments >= 0.0.0"]
+  "dependencies": ["base >= 0.14.0", "k-monuments >= 0.1.0"]
 }

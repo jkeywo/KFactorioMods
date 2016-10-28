@@ -8,9 +8,8 @@ remote.call("k-monuments", "register_monument", {
       offset = { 300, 400 },
     },
     upgrades = {
-      {
+      ["restored-pyramid"] = {
         entity_name = "default-pyramid",
-        upgrade_item = "restored-pyramid",
         attract_biters = {
           chance = { 0.0, 0.5 },
           cycle = 300,

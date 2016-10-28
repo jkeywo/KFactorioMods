@@ -8,7 +8,7 @@ data:extend(
   {
     type = "item",
     name = "restored-statue",
-    icon = "__k-monuments__/graphics/statue_clean.png",
+    icon = "__k-monuments-ruins__/graphics/statue_clean.png",
     flags = {"goes-to-main-inventory"},
     order = "z[restored-statue]",
     stack_size = 1
@@ -30,7 +30,7 @@ data:extend(
   {
     type = "assembling-machine",
     name = "default-statue-vines",
-    icon = "__k-monuments__/graphics/statue_vines.png",
+    icon = "__k-monuments-ruins__/graphics/statue_vines.png",
     flags = { "placeable-neutral" },
     max_health = 250,
     corpse = "big-remnants",
@@ -63,7 +63,7 @@ data:extend(
     },
     animation =
     {
-      filename = "__k-monuments__/graphics/statue_vines.png",
+      filename = "__k-monuments-ruins__/graphics/statue_vines.png",
       priority = "high",
       width = 30,
       height = 82,
@@ -84,7 +84,7 @@ data:extend(
   {
     type = "beacon",
     name = "default-statue",
-    icon = "__k-monuments__/graphics/statue_clean.png",
+    icon = "__k-monuments-ruins__/graphics/statue_clean.png",
     flags = { "placeable-neutral" },
     max_health = 1000,
     corpse = "big-remnants",
@@ -94,7 +94,7 @@ data:extend(
     allowed_effects = {"consumption", "speed", "pollution"},
     base_picture =
     {
-      filename = "__k-monuments__/graphics/statue_clean.png",
+      filename = "__k-monuments-ruins__/graphics/statue_clean.png",
       width = 116,
       height = 93,
       shift = { 0.34, 0.06}
@@ -102,9 +102,9 @@ data:extend(
     order = "a-b-a",
     animation =
     {
-      filename = "__base__/graphics/entity/beacon/beacon-antenna.png",
-      width = 54,
-      height = 50,
+      filename = "__k-monuments-ruins__/graphics/restored-anim.png",
+      width = 68,
+      height = 18,
       line_length = 8,
       frame_count = 32,
       shift = { -0.03, -1.72},
@@ -112,19 +112,19 @@ data:extend(
     },
     animation_shadow =
     {
-      filename = "__base__/graphics/entity/beacon/beacon-antenna-shadow.png",
-      width = 63,
-      height = 49,
+      filename = "__k-monuments-ruins__/graphics/restored-anim-shadow.png",
+      width = 68,
+      height = 18,
       line_length = 8,
       frame_count = 32,
-      shift = { 3.12, 0.5},
+      shift = { 0.5, -1.2},
       animation_speed = 0.5
     },
     radius_visualisation_picture =
     {
       filename = "__base__/graphics/entity/beacon/beacon-radius-visualization.png",
-      width = 96,
-      height = 96
+      width = 12,
+      height = 12
     },
     supply_area_distance = 24,
     energy_source =

@@ -5,15 +5,16 @@ remote.call("k-monuments", "register_monument", {
     entity_name = "default-temple-vines",
     parent_mod_name = "k-monuments-ruins",
     position = {
-      offset = { 1200, 1600},
+      offset = { 12, 16},
     },
     upgrades = {
-      entity_name = "default-temple",
-      upgrade_item = "restored-temple",
-      attract_biters = {
-        chance = { 0.5, 1.0 },
-        cycle = 300,
-        count = { 1, 30 },
+      ["restored-temple"] = {
+        entity_name = "default-temple",
+        attract_biters = {
+          chance = { 0.5, 1.0 },
+          cycle = 300,
+          count = { 1, 30 }
+        }
       }
     }
   })

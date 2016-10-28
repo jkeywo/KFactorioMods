@@ -9,9 +9,8 @@ remote.call("k-monuments", "register_monument", {
       offset = { 600, 800},
     },
     upgrades = {
-      {
+      ["restored-statue"] = {
         entity_name = "default-statue",
-        upgrade_item = "restored-statue",
         attract_biters = {
           chance = { 0.25, 0.75 },
           cycle = 300,
