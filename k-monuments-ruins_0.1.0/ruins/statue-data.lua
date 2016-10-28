@@ -65,8 +65,8 @@ data:extend(
     {
       filename = "__k-monuments-ruins__/graphics/statue_vines.png",
       priority = "high",
-      width = 30,
-      height = 82,
+      width = 84,
+      height = 115,
       frame_count = 1,
       line_length = 1,
       shift = {0.4, -0.06}
@@ -95,8 +95,8 @@ data:extend(
     base_picture =
     {
       filename = "__k-monuments-ruins__/graphics/statue_clean.png",
-      width = 116,
-      height = 93,
+      width = 84,
+      height = 115,
       shift = { 0.34, 0.06}
     },
     order = "a-b-a",

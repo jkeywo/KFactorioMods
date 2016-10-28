@@ -5,7 +5,7 @@ remote.call("k-monuments", "register_monument", {
     entity_name = "default-temple-vines",
     parent_mod_name = "k-monuments-ruins",
     position = {
-      offset = { 12, 16},
+      offset = { 1200, 1600},
     },
     upgrades = {
       ["restored-temple"] = {

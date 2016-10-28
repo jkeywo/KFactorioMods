@@ -65,8 +65,8 @@ data:extend(
     {
       filename = "__k-monuments-ruins__/graphics/pyramid_vines.png",
       priority = "high",
-      width = 70,
-      height = 77,
+      width = 136,
+      height = 103,
       frame_count = 1,
       line_length = 1,
       shift = {0.4, -0.06}
@@ -95,8 +95,8 @@ data:extend(
     base_picture =
     {
       filename = "__k-monuments-ruins__/graphics/pyramid_clean.png",
-      width = 116,
-      height = 93,
+      width = 136,
+      height = 103,
       shift = { 0.34, 0.06}
     },
     order = "a-b-a",

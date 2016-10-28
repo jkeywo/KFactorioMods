@@ -65,8 +65,8 @@ data:extend(
     {
       filename = "__k-monuments-ruins__/graphics/temple_vines.png",
       priority = "high",
-      width = 73,
-      height = 53,
+      width = 124,
+      height = 125,
       frame_count = 1,
       line_length = 1,
       shift = {0.4, -0.06}
@@ -95,8 +95,8 @@ data:extend(
     base_picture =
     {
       filename = "__k-monuments-ruins__/graphics/temple_clean.png",
-      width = 116,
-      height = 93,
+      width = 124,
+      height = 125,
       shift = { 0.34, 0.06}
     },
     order = "a-b-a",
