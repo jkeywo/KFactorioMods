@@ -30,6 +30,7 @@ local monument_data = {}
 --  }
 --}
 local finalise_list = {}
+local finalise_reveal_list = {}
 
 -- Functions
 local function lerp(range, t)
@@ -174,7 +175,11 @@ local function finalise_registration( name )
 end
 
 local function reveal_monument( name )
-  if not monument_data[name] or not global.monuments or not global.monuments[name] then
+  finalise_reveal_list[name] = true
+end
+
+local function finalise_reveal( name )
+  if not monument_data[name] or not global.monuments[name] then
     game.print("ERROR: Missing monument in 'reveal_monument'")
     return
   end
@@ -290,6 +295,10 @@ Event.register(defines.events.on_tick, function(event)
     finalise_registration( _name )
   end
   finalise_list = {}
+  for _name, _ in  pairs(finalise_reveal_list) do
+    finalise_reveal( _name )
+  end
+  finalise_reveal_list = {}
 
   for _, _monument in pairs(monument_data) do
     local _global_data = global.monuments[_monument.name]
