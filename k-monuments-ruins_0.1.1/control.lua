@@ -6,6 +6,10 @@ event_callbacks = {}
 require("ruins.pyramid-control")
 require("ruins.statue-control")
 require("ruins.temple-control")
+require("ruins.tree-control")
+require("ruins.silo-control")
+require("ruins.munitions-control")
+require("ruins.steam-control")
 
 -- message handling from "k-monuments"
 Event.register(defines.events.on_tick, function(event)

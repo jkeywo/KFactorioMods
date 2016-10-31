@@ -112,6 +112,10 @@ end
 
 -- Events
 Event.register(defines.events.on_tick, function( event )
+  -- check for world generation error and report (required "none" controls)
+  
+    
+  -- update generation and teleporting
   local _new_list = {}
   local _surface = get_starting_surface()
   for _, _data in pairs(pending_teleports) do
@@ -132,13 +136,6 @@ Event.register(defines.events.on_tick, function( event )
     end
   end
   pending_teleports = _new_list
-end)
-
-Event.register(defines.events.on_player_created, function(event)
-  local player = game.players[event.player_index]
-  if player.surface.name == "nauvis" and starting_world ~= "nauvis" then
-    teleport_to_world( starting_world, player )
-  end
 end)
 
 -- Script Interface

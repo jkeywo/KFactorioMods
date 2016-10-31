@@ -57,6 +57,11 @@ local function get_monument_surface( name_or_data )
   end
 end
 
+local function get_monument_entity( name )
+  local _global_data = global.monuments[name]
+  local _surface = get_monument_surface(name)
+  return _surface.find_entity( _global_data.entity_name, _global_data.position )
+end
 local function contains_monument( name, surface, area )
   local _global_data = global.monuments[name]
   if not _global_data then game.print("ERROR: Missing global data in 'contains_monument'") return false end
@@ -169,7 +174,7 @@ local function finalise_registration( name )
 end
 
 local function reveal_monument( name )
-  if not monument_data[name] or not global.monuments[name] then
+  if not monument_data[name] or not global.monuments or not global.monuments[name] then
     game.print("ERROR: Missing monument in 'reveal_monument'")
     return
   end
@@ -340,6 +345,9 @@ remote.add_interface("k-monuments", {
   end,
   downgrade_monument = function( name )
     downgrade_monument( name )
+  end,
+  get_monument_entity = function( name )
+    return get_monument_entity( name )
   end,
   get_monument_data = function( name )
     return monument_data[name]

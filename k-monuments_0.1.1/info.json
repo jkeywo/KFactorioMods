@@ -1,6 +1,6 @@
 {
   "name": "k-monuments",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "factorio_version": "0.14",
   "title": "KMonuments - Lib",
   "description": "A library to allow mod authors to add landmarks to the game. It inclues supports for dicovery, rennovation and a few other features.",
