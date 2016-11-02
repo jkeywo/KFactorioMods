@@ -2,16 +2,16 @@
   "name": "k-nineworlds",
   "version": "0.0.0",
   "factorio_version": "0.14",
-  "title": "KNineWorlds",
+  "title": "K Nine Worlds",
   "description": "Explore the Nine Worlds and take part in the struggle between the Aesir and Vanir.",
   "author": "John K",
   "contact": "jkeywo@yahoo.co.uk",
   "homepage": "",
   "dependencies": [
     "base >= 0.14.0", 
-    "k-composite-entities >= 0.0.0", 
-    "k-worlds >= 0.0.0", 
-    "k-monuments >= 0.0.0", 
-    "k-villages-base >= 0.0.0"
+    "k-core >= 0.1.0", 
+    "k-above-and-below >= 0.0.0", 
+    "k-ruins >= 0.1.0", 
+    "k-villages >= 0.0.0"
   ]
 }

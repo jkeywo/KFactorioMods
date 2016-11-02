@@ -1,0 +1,11 @@
+{
+  "name": "k-core",
+  "version": "0.1.0",
+  "factorio_version": "0.14",
+  "title": "K Core",
+  "description": "A library that adds support for several new features that cna be used by other mods.",
+  "author": "John K",
+  "contact": "jkeywo@yahoo.co.uk",
+  "homepage": "",
+  "dependencies": ["base >= 0.14.0"]
+}

@@ -1,25 +1,45 @@
 # KFactorioMods
 A series of factorio mods
 
-## KMonuments - Lib
-WIP - v0.1.0
-Acts as a library to allow other mods to add unique monuments.
+## K Core
+v0.1.0
 
-## KMonuments - Ruins
-WIP - v0.1.0
-Generates several monuments in the world to discover and rennovate for unique rewards.
+Acts as a library for other mods adding new features ot the game.
 
-## KVillages
-WIP - v0.0.0
-Creates 'village' monuments that, when renovated, will give you some helpful NPCs.
-Acts as a library to allow other mods to add unique villages too.
+### Components
+Working (but still being improved):
 
-## KWorlds
-WIP - v0.0.0
-Adds some new worlds and the technology to traverse/build between them.
-Acts as a library to allow other mods to add unique worlds too.
+Monuments: Adds unique buildings that spawn randomly on the map. Also has a system for upgrading them.
 
-## Nine Worlds
-WIP - v0.0.0
-Combines the first three mods, along with some bespoke content.
-Explore the nine worlds and fight for the Vanir or Aesir to control them.
+Work In Progress:
+
+Composite Entities: Allow multiple entities to be placed/mined/destroyed as if they were one.
+
+To Do:
+
+Worlds: Adds other worlds that create new surfaces and handle movement of chatacters, items and fluids between them.
+
+Missions: Set missions, track their progress, handles their complation.
+
+Units: A system for controlling NPC units.
+
+## K Ruins
+v0.1.0
+
+Places 5 unique monuments with special powers into the world.
+
+## K Villages
+v0.0.0
+
+Not started but will showcase the units section of K Core.
+
+
+## K Above and Below
+v0.0.0
+
+Not started but will showcase the worlds section of K Core.
+
+## K Nine Worlds
+v0.0.0
+
+Not started but will combine all the other mods and create a coherant campaign. Visit the nine worlds and join the battle between the Aesir and the Vanir.
