@@ -33,6 +33,9 @@ local function register_composite( data )
 end
 
 local function create_linked(entity)
+  global.composite_entity_parent = global.composite_entity_parent or {}
+  global.composite_entities = global.composite_entities or {}
+  
   -- record base entity
   local _data = composite_entities[entity.name]
   if _data then
@@ -60,6 +63,8 @@ end
 
 local function destroy_linked(entity)
   global.composite_entity_parent = global.composite_entity_parent or {}
+  global.composite_entities = global.composite_entities or {}
+  
   local _parent_index = global.composite_entity_parent[entity]
   local _parent = global.composite_entities[_parent_index]
   for _, _entity in pairs(_parent.entity_list) do

@@ -18,7 +18,7 @@ data:extend(
   {
     type = "recipe",
     name = "restore-rocket-silo",
-    enabled = false,
+    enabled = true,
     ingredients =
     {
       {"steel-plate", 1000},
@@ -29,8 +29,7 @@ data:extend(
     },
     energy_required = 30,
     result = "restored-silo",
-    category = "restore-silo",
-    requester_paste_multiplier = 1
+    category = "restore-silo"
   },
   {
     type = "assembling-machine",

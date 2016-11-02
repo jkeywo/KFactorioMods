@@ -3,7 +3,7 @@
 for i = 1, #Config.obelisks do
   local _data = {
     name = "obelisk-"..i,
-    localised_name="obelisk"
+    localised_name="obelisk",
     entity_name = "obelisk-ruined",
     parent_mod_name = "k-ruins",
     position = {

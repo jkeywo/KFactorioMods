@@ -70,7 +70,7 @@ data:extend(
       height = 90,
       frame_count = 1,
       line_length = 1,
-      shift = {0.0, -1.5}
+      shift = { 0.875, -0.5625},
     },
     energy_source =
     {
@@ -108,7 +108,7 @@ data:extend(
       height = 184,
       line_length = 8,
       frame_count = 32,
-      shift = { 0.0, -1.5},
+      shift = { 2.0, -1.4375},
       animation_speed = 0.25
     },
     animation_shadow =
