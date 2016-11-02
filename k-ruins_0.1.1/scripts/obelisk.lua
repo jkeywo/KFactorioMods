@@ -14,7 +14,7 @@ for i = 1, #Config.obelisks do
         entity_name = "obelisk",
         attract_biters = {
           chance = { 0.0, 0.75 },
-          cycle = 300,
+          cycle = 300 * Time.SECOND,
           count = { 1, 20 },
         },
         on_placed = script.generate_event_name(),
@@ -26,17 +26,24 @@ for i = 1, #Config.obelisks do
   
   Event.register( _data.upgrades["restored-obelisk"].on_placed, function(event)
     global.obelisk_modifiers = global.obelisk_modifiers or {}
-    global.obelisk_modifiers[event.entity.force] = (global.obelisk_modifiers[event.entity.force] + 1) or 1
-    local _restored = global.obelisk_modifiers[event.entity.force]
-    event.entity.force[Config.obelisks[_restored].modifier] = event.entity.force[Config.obelisks[_restored].modifier] + Config.obelisks[_restored].amount
+    local _restored = global.obelisk_modifiers[event.entity.force] or 0
+    _restored = _restored + 1
+    global.obelisk_modifiers[event.entity.force] = _restored
+    
+    local _modifier = event.entity.force[Config.obelisks[_restored].modifier]
+    _modifier = _modifier + Config.obelisks[_restored].amount
+    event.entity.force[Config.obelisks[_restored].modifier] = _modifier
   end)
 
   Event.register( _data.upgrades["restored-obelisk"].on_removed, function(event)
+    
     global.obelisk_modifiers = global.obelisk_modifiers or {}
     local _lost = global.obelisk_modifiers[event.entity.force]
     if _lost then
-      event.entity.force[Config.obelisks[_lost].modifier] = event.entity.force[Config.obelisks[_lost].modifier] - Config.obelisks[_lost].amount
-      global.obelisk_modifiers[event.entity.force] = global.obelisk_modifiers[event.entity.force] - 1
+      local _modifier = event.entity.force[Config.obelisks[_lost].modifier]
+      _modifier = _modifier - Config.obelisks[_lost].amount
+      event.entity.force[Config.obelisks[_lost].modifier] = _modifier
+      global.obelisk_modifiers[event.entity.force] = _lost - 1
     end
   end)
 end

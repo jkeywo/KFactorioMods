@@ -66,7 +66,10 @@ local function destroy_linked(entity)
   global.composite_entities = global.composite_entities or {}
   
   local _parent_index = global.composite_entity_parent[entity]
+  if not _parent_index then return end
   local _parent = global.composite_entities[_parent_index]
+  if not _parent then return end
+  
   for _, _entity in pairs(_parent.entity_list) do
     if _entity ~= entity then
       global.composite_entity_parent[_entity] = nil

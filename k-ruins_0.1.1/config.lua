@@ -4,7 +4,7 @@ Config = {
       { modifier="character_health_bonus", amount=100 },
       { modifier="character_inventory_slots_bonus", amount=16 },
     },
-  world_tree = true,
+  world_tree = false,
   steam_geyser = true,
   munitions_manufactory = true,
   rocket_silo = true,

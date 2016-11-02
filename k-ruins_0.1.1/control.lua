@@ -1,4 +1,5 @@
 require("stdlib.event.event")
+require("stdlib.time")
 
 require("config")
 if Config.obelisks then

@@ -62,7 +62,7 @@ data:extend(
       }
     },
     order = "a-b-a",
-    collision_box = {{-1.9, -1.9}, {1.9, 1.9}},
+    collision_box = {{-1.2, -1.2}, {1.2, 1.2}},
     selection_box = {{-1.5, -1.5}, {1.5, 1.5}},
     vehicle_impact_sound =  { filename = "__base__/sound/car-wood-impact.ogg", volume = 0.65 },
     working_sound =
@@ -88,7 +88,7 @@ data:extend(
       height = 384,
       frame_count = 1,
       line_length = 1,
-      shift = {5.9, 9.75}
+      shift = {-0.0, -4.5}
     },
     open_sound = { filename = "__base__/sound/wooden-chest-open.ogg", volume = 0.85 },
     close_sound = { filename = "__base__/sound/wooden-chest-close.ogg", volume = 0.75 },
@@ -100,7 +100,7 @@ data:extend(
     energy_usage = "1kW",
     crafting_categories = { "restore-world-tree" },
     crafting_speed = 1.0,
-    ingredient_count = 4,
+    ingredient_count = 1,
   },
   {
     type = "item-subgroup",
@@ -175,7 +175,7 @@ data:extend(
     flags = {"placeable-neutral"},
     max_health = 1500,
     corpse = "big-remnants",
-    collision_box = {{-1.0, -1.0}, {1.0, 1.0}},
+    collision_box = {{-1.2, -1.2}, {1.2, 1.2}},
     selection_box = {{-1.5, -1.5}, {1.5, 1.5}},
     vehicle_impact_sound =  { filename = "__base__/sound/car-wood-impact.ogg", volume = 0.65 },
     order = "a-b-a",
@@ -187,7 +187,7 @@ data:extend(
       height = 384,
       frame_count = 1,
       line_length = 1,
-      shift = {5.9, 9.75}
+      shift = {-0.0, -4.5}
     },
     open_sound = { filename = "__base__/sound/wooden-chest-open.ogg", volume = 0.85 },
     close_sound = { filename = "__base__/sound/wooden-chest-close.ogg", volume = 0.75 },

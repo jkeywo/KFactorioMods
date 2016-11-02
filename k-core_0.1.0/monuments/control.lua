@@ -81,10 +81,10 @@ end
 
 Monument.contains = function( name_or_data, surface, area )
   local _data = Monument.get_data( name_or_data )
-  local _global_data = global.monuments[_data.name]
+  local _global_data = _data:get_global_data()
   if not _global_data then game.print("ERROR: Missing global data in 'contains_monument'") return false end
   
-  if surface == Monument.get_surface(_data) and Area.inside( area, _global_data.position ) then
+  if surface == _data:get_surface() and Area.inside( area, _global_data.position ) then
     return true
   end
   return false
@@ -246,7 +246,7 @@ Monument.upgrade = function( name_or_data, upgrade_name )
   _global_data.entity_name = _upgrade_data.entity_name
 
   -- queue an event
-  if _upgrade_data.on_enter then
+  if _upgrade_data.on_placed then
     game.raise_event( _upgrade_data.on_placed, {
         data = _data,
         global_data = _global_data,
@@ -299,8 +299,7 @@ Monument.downgrade = function( name_or_data, upgrade_name )
         entity = _new_entity
       })
   end
-
-
+  
   game.print({"downgrade-monument."..(_data.localised_name or _data.name)})
 end
 

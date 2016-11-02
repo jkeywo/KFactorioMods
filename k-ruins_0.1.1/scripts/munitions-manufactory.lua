@@ -12,7 +12,7 @@ remote.call("k-monuments", "register_monument", {
         entity_name = "munitions-manufactory",
         attract_biters = {
           chance = 0.5,
-          cycle = 120,
+          cycle = 120 * Time.SECOND,
           count = { 1, 30 },
         }
       }
@@ -35,7 +35,7 @@ Event.register(defines.events.on_tick, function(event)
     if _entity.valid  then
       local _from = _entity.get_output_inventory().find_item_stack("ancient-rounds-magazine")
       -- find an eligible player
-      local _player = game.players[game.tick % #game.players]
+      local _player = game.players[(game.tick % #game.players) + 1]
       if _from and _player then
         local _inventory = _player.get_inventory( defines.inventory.player_ammo )
         local _to = _inventory.find_item_stack("ancient-rounds-magazine")
