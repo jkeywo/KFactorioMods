@@ -104,46 +104,84 @@ data:extend(
   },
   {
     type = "item-subgroup",
-    name = "trees",
+    name = "capsules",
     group = "monuments",
     order = "d-b",
   },
   {
-		type = "item",
-		name = "tree-01",
-		icon = "__base__/graphics/icons/tree-01.png",
-		flags = {"goes-to-quickbar"},
-    subgroup = "trees",
-		place_result = "tree-01",
-		stack_size = 50
-	},
+    type = "capsule",
+    name = "seed-pod",
+    icon = "__base__/graphics/icons/grenade.png",
+    flags = {"goes-to-quickbar"},
+    capsule_action =
+    {
+      type = "throw",
+      attack_parameters =
+      {
+        type = "projectile",
+        ammo_category = "capsule",
+        cooldown = 1,
+        projectile_creation_distance = 0.6,
+        range = 20,
+        ammo_type =
+        {
+          category = "capsule",
+          target_type = "position",
+          action =
+          {
+            type = "direct",
+            action_delivery =
+            {
+              type = "projectile",
+              projectile = "tree-seed",
+              starting_speed = 0.3
+            }
+          }
+        }
+      }
+    },
+    subgroup = "capsules",
+    order = "a[grenade]-a[seed-pod]",
+    stack_size = 100
+  },
   {
-		type = "item",
-		name = "tree-02",
-		icon = "__base__/graphics/icons/tree-02.png",
-		flags = {"goes-to-quickbar"},
-    subgroup = "trees",
-		place_result = "tree-02",
-		stack_size = 50
-	},
-  {
-		type = "item",
-		name = "tree-03",
-		icon = "__base__/graphics/icons/tree-03.png",
-		flags = {"goes-to-quickbar"},
-    subgroup = "trees",
-		place_result = "tree-03",
-		stack_size = 50
-	},
-  {
-		type = "item",
-		name = "tree-04",
-		icon = "__base__/graphics/icons/tree-04.png",
-		flags = {"goes-to-quickbar"},
-    subgroup = "trees",
-		place_result = "tree-04",
-		stack_size = 50
-	},
+    type = "projectile",
+    name = "tree-seed",
+    flags = {"not-on-map"},
+    acceleration = 0.005,
+    action =
+    {
+      type = "cluster",
+      cluster_count = 7,
+      distance = 4,
+      distance_deviation = 3,
+      target_effects =
+      {
+        type = "create-entity",
+        show_in_tooltip = true,
+        entity_name = "tree-01",
+        offsets = {{-0.7, -0.7},{-0.7, 0.7},{0.7, -0.7},{0.7, 0.7},{0, 0}}
+      }
+    },
+    light = {intensity = 0.5, size = 4},
+    animation =
+    {
+      filename = "__base__/graphics/entity/combat-robot-capsule/destroyer-capsule.png",
+      frame_count = 1,
+      width = 32,
+      height = 32,
+      priority = "high"
+    },
+    shadow =
+    {
+      filename = "__base__/graphics/entity/combat-robot-capsule/combat-robot-capsule-shadow.png",
+      frame_count = 1,
+      width = 32,
+      height = 32,
+      priority = "high"
+    },
+    smoke = capsule_smoke
+  },
   {
     type = "recipe-category",
     name = "air-filter"
@@ -162,10 +200,7 @@ data:extend(
     },
     results = 
     {
-      {type = "item", name = "tree-01", amount = 1, probability = 0.25 },
-      {type = "item", name = "tree-02", amount = 1, probability = 0.25 },
-      {type = "item", name = "tree-03", amount = 1, probability = 0.25 },
-      {type = "item", name = "tree-04", amount = 1, probability = 0.25 },
+      {type = "item", name = "seed-pod", amount = 1 },
      },
   },
   {
@@ -210,5 +245,5 @@ data:extend(
     energy_usage = "1kW",
     ingredient_count = 1,
     module_slots = 0
-  },
+  }
 })

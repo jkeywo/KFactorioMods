@@ -116,10 +116,13 @@ Monument.place = function( name_or_data )
     name = _data.entity_name, 
     position = _global_data.position, 
     force = game.players[1].force, -- TODO fix force, make the monuments claimable
-  } 
-  _monument.destructible = false
-  _monument.rotatable = false
-  _monument.minable = false
+  }
+  local _entities = create_linked(_monument)
+  for _, _entity in pairs(_entities) do
+    _entity.destructible = false
+    _entity.rotatable = false
+    _entity.minable = false
+  end
   
   _global_data.generated = true
 end
@@ -240,17 +243,21 @@ Monument.upgrade = function( name_or_data, upgrade_name )
     position = _global_data.position,
     force = _force
   }
-  _new_entity.rotatable = false
-  _new_entity.minable = false
+  local _entities = create_linked(_new_entity)
+  for _, _entity in pairs(_entities) do
+    _entity.rotatable = false
+    _entity.minable = false
+  end
+  
   _global_data.upgrade_name = upgrade_name
   _global_data.entity_name = _upgrade_data.entity_name
 
-  -- queue an event
+  -- trigger an event
   if _upgrade_data.on_placed then
     game.raise_event( _upgrade_data.on_placed, {
         data = _data,
         global_data = _global_data,
-        entity = _new_entity
+        entities = _entities
       })
   end
     
@@ -284,9 +291,12 @@ Monument.downgrade = function( name_or_data, upgrade_name )
     position = _global_data.position,
     force = _force
   }
-  _new_entity.destructible = false
-  _new_entity.rotatable = false
-  _new_entity.minable = false
+  local _entities = create_linked(_new_entity)
+  for _, _entity in pairs(_entities) do
+    _entity.destructible = false
+    _entity.rotatable = false
+    _entity.minable = false
+  end
 
   _global_data.upgrade_name = nil
   _global_data.entity_name = _data.entity_name
@@ -296,7 +306,7 @@ Monument.downgrade = function( name_or_data, upgrade_name )
     game.raise_event( _upgrade_data.on_removed, {
         data = _data,
         global_data = _global_data,
-        entity = _new_entity
+        entities = _entities
       })
   end
   

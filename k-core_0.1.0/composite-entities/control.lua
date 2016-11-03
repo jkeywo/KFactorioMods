@@ -8,7 +8,9 @@ local composite_entities = {}
 --    component_entities = 
 --    {
 --      entity_name = "",
---      offset = { x=0, y=0 }
+--      offset = { x=0, y=0 },
+--      operable=false,
+--      lable="train-stop-name"
 --    }
 -- }
 -- global.composite_entities = { { type="name", entity_list = {} } }
@@ -28,11 +30,11 @@ local function rotate_offset( offset, direction )
   return offset
 end
 
-local function register_composite( data )
+function register_composite( data )
   composite_entities[data.base_entity] = data
 end
 
-local function create_linked(entity)
+function create_linked(entity)
   global.composite_entity_parent = global.composite_entity_parent or {}
   global.composite_entities = global.composite_entities or {}
   
@@ -48,20 +50,25 @@ local function create_linked(entity)
     entity.destroy()
     for _, _child in pairs(_data.component_entities) do
       local _new_child = _surface.create_entity { 
-        name = _child.name,
+        name = _child.entity_name,
         direction  = _direction,
         surface = _surface,
         position = Position.add( _position, rotate_offset( _child.offset, _direction ) ),
         force = _force
       }
+      if _child.operable ~= nil then _new_child.operable = _child.operable end
+      if _child.lable ~= nil and _new_child.supports_backer_name() then _new_child.backer_name = _child.lable end
+      
       table.insert( _new_global.entity_list, _new_child )
       global.composite_entity_parent[_new_child] = _new_global_index
     end
     global.composite_entities[_new_global_index] = _new_global
+    return _new_global.entity_list
   end
+  return { entity }
 end
 
-local function destroy_linked(entity)
+function destroy_linked(entity)
   global.composite_entity_parent = global.composite_entity_parent or {}
   global.composite_entities = global.composite_entities or {}
   

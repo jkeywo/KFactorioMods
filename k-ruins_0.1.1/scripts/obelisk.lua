@@ -26,24 +26,32 @@ for i = 1, #Config.obelisks do
   
   Event.register( _data.upgrades["restored-obelisk"].on_placed, function(event)
     global.obelisk_modifiers = global.obelisk_modifiers or {}
-    local _restored = global.obelisk_modifiers[event.entity.force] or 0
-    _restored = _restored + 1
-    global.obelisk_modifiers[event.entity.force] = _restored
     
-    local _modifier = event.entity.force[Config.obelisks[_restored].modifier]
+    local _force = event.entities[1].force
+    local _id = _force.name
+    
+    local _restored = global.obelisk_modifiers[_id] or 0
+    _restored = _restored + 1
+    global.obelisk_modifiers[_id] = _restored
+    
+    local _modifier = _force[Config.obelisks[_restored].modifier]
     _modifier = _modifier + Config.obelisks[_restored].amount
-    event.entity.force[Config.obelisks[_restored].modifier] = _modifier
+    _force[Config.obelisks[_restored].modifier] = _modifier
   end)
 
   Event.register( _data.upgrades["restored-obelisk"].on_removed, function(event)
-    
     global.obelisk_modifiers = global.obelisk_modifiers or {}
-    local _lost = global.obelisk_modifiers[event.entity.force]
+    
+    local _force = event.entities[1].force
+    local _id = _force.name
+    
+    local _lost = global.obelisk_modifiers[_id]
     if _lost then
-      local _modifier = event.entity.force[Config.obelisks[_lost].modifier]
+      local _modifier = _force[Config.obelisks[_lost].modifier]
       _modifier = _modifier - Config.obelisks[_lost].amount
-      event.entity.force[Config.obelisks[_lost].modifier] = _modifier
-      global.obelisk_modifiers[event.entity.force] = _lost - 1
+      _force[Config.obelisks[_lost].modifier] = _modifier
+      
+      global.obelisk_modifiers[_id] = _lost - 1
     end
   end)
 end

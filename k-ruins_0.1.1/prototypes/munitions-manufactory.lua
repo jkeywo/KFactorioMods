@@ -83,11 +83,11 @@ data:extend(
   
   {
     type = "recipe-category",
-    name = "ancient-ammo",
+    name = "vanir-ammo",
   },
   {
     type = "ammo",
-    name = "ancient-rounds-magazine",
+    name = "vanir-rounds-magazine",
     icon = "__base__/graphics/icons/piercing-rounds-magazine.png",
     flags = {"goes-to-main-inventory"},
     ammo_type =
@@ -120,21 +120,21 @@ data:extend(
     },
     magazine_size = 10,
     subgroup = "ammo",
-    order = "a[basic-clips]-b[ancient-rounds-magazine]",
+    order = "a[basic-clips]-b[vanir-rounds-magazine]",
     stack_size = 100
   },
   {
     type = "recipe",
-    name = "ancient-rounds-magazine",
+    name = "vanir-rounds-magazine",
     enabled = true,
     ingredients =
     {
       { "piercing-rounds-magazine", 10 },
       { "alien-artifact", 1 }
     },
-    result = "ancient-rounds-magazine",
+    result = "vanir-rounds-magazine",
     result_count = 10,
-    category = "ancient-ammo"
+    category = "vanir-ammo"
   },
   {
     type = "assembling-machine",
@@ -186,7 +186,7 @@ data:extend(
       usage_priority = "secondary-input"
     },
     energy_usage = "1kW",
-    crafting_categories = { "ancient-ammo" },
+    crafting_categories = { "vanir-ammo" },
     crafting_speed = 1.0,
     ingredient_count = 4,
   },

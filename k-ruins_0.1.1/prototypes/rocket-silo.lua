@@ -47,8 +47,8 @@ data:extend(
       }
     },
     order = "a-b-a",
-    collision_box = {{-4.2, -4.7}, {4.2, 4.7}},
-    selection_box = {{-4.5, -5}, {4.5, 5}},
+    collision_box = {{-4.2, -3.7}, {4.2, 4.7}},
+    selection_box = {{-4.5, -4}, {4.5, 5}},
     vehicle_impact_sound =  { filename = "__base__/sound/car-metal-impact.ogg", volume = 0.65 },
     working_sound =
     {
@@ -73,7 +73,7 @@ data:extend(
       height = 384,
       frame_count = 1,
       line_length = 1,
-      shift = {0, 0}
+      shift = {0, (1/16) }
     },
     energy_source =
     {

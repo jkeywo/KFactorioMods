@@ -6,7 +6,7 @@ data:extend(
   {
 		type = "item-group",
 		name = "monuments",
-    icon = "__k-ruins__/graphics/blank.png",
+    icon = "__k-ruins__/graphics/obelisk/obelisk_icon.png",
 		order = "z-b",
   },  
   {
