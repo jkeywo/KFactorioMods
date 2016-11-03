@@ -89,7 +89,7 @@ data:extend(
     enabled = true,
     ingredients = {},
     results = {
-      { type="fluid", name="water", amount=60 },
+      { type="fluid", name="water", amount=450 },
     },
     category = "steam-pumping"
   },

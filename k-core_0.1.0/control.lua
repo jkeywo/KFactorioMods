@@ -1,6 +1,14 @@
 
 require("config")
 
+require("stdlib.area.area")
+require("stdlib.area.chunk")
+require("stdlib.area.position")
+require("stdlib.area.tile")
+require("stdlib.event.event")
+
+
+
 if Config["composite-entities"] then
   require("composite-entities.control")
 end
@@ -16,17 +24,3 @@ end
 if Config["worlds"] then
   require("worlds.control")
 end
-
-register_composite({
-    base_entity = "signpost",
-    component_entities = {
-      {
-        entity_name = "signpost",
-        offset = { x=0, y=0 },
-      },
-      {
-        entity_name = "invisible-label-1x1-signpost",
-        offset = { x=0, y=0 },
-      }
-    }
- })

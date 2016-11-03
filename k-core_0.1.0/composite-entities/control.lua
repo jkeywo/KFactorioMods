@@ -1,7 +1,4 @@
 
-require("stdlib.area.position")
-require("stdlib.event.event")
-
 local composite_entities = {}
 -- {
 --    base_entity = "",
@@ -19,7 +16,7 @@ local composite_entities = {}
 local function rotate_offset( offset, direction )
   offset = Position.to_table( offset )
   if direction == defines.direction.north	then
-    return { -offset.x, -offset.y }
+    return { offset.x, offset.y }
   elseif direction == defines.direction.east then
     return { offset.y, -offset.x }
   elseif direction == defines.direction.south then
@@ -53,15 +50,16 @@ function create_linked(entity)
         name = _child.entity_name,
         direction  = _direction,
         surface = _surface,
-        position = Position.add( _position, rotate_offset( _child.offset, _direction ) ),
+        position = Tile.from_position( Position.add( _position, rotate_offset( _child.offset, _direction ) ) ),
         force = _force
       }
       if _child.operable ~= nil then _new_child.operable = _child.operable end
       if _child.lable ~= nil and _new_child.supports_backer_name() then _new_child.backer_name = _child.lable end
       
       table.insert( _new_global.entity_list, _new_child )
-      global.composite_entity_parent[_new_child] = _new_global_index
+      global.composite_entity_parent[_new_child.unit_number] = _new_global_index
     end
+    
     global.composite_entities[_new_global_index] = _new_global
     return _new_global.entity_list
   end
@@ -72,7 +70,7 @@ function destroy_linked(entity)
   global.composite_entity_parent = global.composite_entity_parent or {}
   global.composite_entities = global.composite_entities or {}
   
-  local _parent_index = global.composite_entity_parent[entity]
+  local _parent_index = global.composite_entity_parent[entity.unit_number]
   if not _parent_index then return end
   local _parent = global.composite_entities[_parent_index]
   if not _parent then return end

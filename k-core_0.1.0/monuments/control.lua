@@ -1,10 +1,4 @@
 
--- std lib
-require("stdlib.area.area")
-require("stdlib.area.chunk")
-require("stdlib.area.position")
-require("stdlib.event.event")
-
 -- GLOBAL DATA
 -- global.monuments[ "name" ]
 -- {
@@ -212,7 +206,7 @@ Monument.finalise_reveal = function( name_or_data )
   _surface.request_to_generate_chunks( _chunk_position, 1 )
 
   for _, _force in pairs(game.forces) do
-    _force.chart( _surface, Chunk.to_area(_chunk_position) )
+    _force.chart( _surface, Position.expand_to_area( global.monuments[_data.name].position, 16 ) )
   end
 
   game.print({"reveal-monument."..(_data.localised_name or _data.name)})

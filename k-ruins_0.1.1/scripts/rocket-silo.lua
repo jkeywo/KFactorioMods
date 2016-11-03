@@ -18,7 +18,7 @@ remote.call( "k-composite-entities", "register_composite", {
       base_entity = "rocket-silo-vines",
       component_entities = {
         { entity_name = "rocket-silo-vines", offset = { x=0, y=0 } },
-        { entity_name = "invisible-label-9x1", offset = { x=-4, y=-5 }, operable=false, lable="Ruined Rocket Silo" }
+        { entity_name = "invisible-label-1x1", offset = { x=0, y=0 }, operable=false, lable="Ruined Rocket Silo" }
       }
     })
 
