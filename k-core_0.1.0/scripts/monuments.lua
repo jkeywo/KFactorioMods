@@ -68,8 +68,8 @@ end
 
 Monument.get_entity = function( name_or_data )
   local _data = Monument.get_data( name_or_data )
-  local _global_data = global.monuments[ _data.name ]
-  local _surface = Monument.get_surface( _data )
+  local _global_data = _data:get_global_data()
+  local _surface = _data:get_surface()
   return _surface.find_entity( _global_data.entity_name, _global_data.position )
 end
 
@@ -86,10 +86,10 @@ end
 
 Monument.place = function( name_or_data )
   local _data = Monument.get_data( name_or_data )
-  local _global_data = global.monuments[_data.name]
+  local _global_data = _data:get_global_data()
   if not _global_data then game.print("ERROR: Missing global data in 'contains_monument'") return false end
   
-  local _surface = Monument.get_surface(_data)
+  local _surface = _data:get_surface()
   local _surrounding_area = Position.expand_to_area( _global_data.position, _data.flooring_area or 4 )
   
   -- clear area of doodads and other entities
@@ -111,7 +111,7 @@ Monument.place = function( name_or_data )
     position = _global_data.position, 
     force = game.players[1].force, -- TODO fix force, make the monuments claimable
   }
-  local _entities = create_linked(_monument)
+  local _entities = CompositeEntities.create_linked(_monument)
   for _, _entity in pairs(_entities) do
     _entity.destructible = false
     _entity.rotatable = false
@@ -122,9 +122,7 @@ Monument.place = function( name_or_data )
 end
 
 Monument.register = function( data )
-  
   setmetatable(data, {__index = Monument})
-  
   Monument.data[data.name] = data
   finalise_list[ data.name ] = true
 end
@@ -180,9 +178,9 @@ Monument.finalise_registration = function( name_or_data )
   global.monuments[_data.name] = _global_data
   
   -- place if already generated
-  local _surface = Monument.get_surface(_data)
+  local _surface = _data:get_surface()
   if _surface.is_chunk_generated( Chunk.from_position(_final_position) ) then
-    Monument.place( _data )
+    _data:place()
   end
 end
 
@@ -201,7 +199,7 @@ Monument.finalise_reveal = function( name_or_data )
     return
   end
  
-  local _surface = Monument.get_surface(_data.name)
+  local _surface = _data:get_surface()
   local _chunk_position = Chunk.from_position( global.monuments[_data.name].position )
   _surface.request_to_generate_chunks( _chunk_position, 1 )
 
@@ -220,7 +218,7 @@ Monument.upgrade = function( name_or_data, upgrade_name )
     return
   end
   
-  local _surface = Monument.get_surface(_data)
+  local _surface = _data:get_surface()
   local _force = game.players[1].force
   
   -- destroy existing entity
@@ -237,7 +235,7 @@ Monument.upgrade = function( name_or_data, upgrade_name )
     position = _global_data.position,
     force = _force
   }
-  local _entities = create_linked(_new_entity)
+  local _entities = CompositeEntities.create_linked(_new_entity)
   for _, _entity in pairs(_entities) do
     _entity.rotatable = false
     _entity.minable = false
@@ -285,7 +283,7 @@ Monument.downgrade = function( name_or_data, upgrade_name )
     position = _global_data.position,
     force = _force
   }
-  local _entities = create_linked(_new_entity)
+  local _entities = CompositeEntities.create_linked(_new_entity)
   for _, _entity in pairs(_entities) do
     _entity.destructible = false
     _entity.rotatable = false
@@ -310,8 +308,8 @@ end
 -- Events
 Event.register(defines.events.on_chunk_generated, function(event)
   for _, _monument in pairs(Monument.data) do
-    if Monument.contains( _monument, event.surface, event.area ) then
-      Monument.place( _monument )
+    if _monument:contains( event.surface, event.area ) then
+      _monument:place()
     end
   end
 end)
@@ -332,16 +330,16 @@ Event.register(defines.events.on_tick, function(event)
     if _global_data and _global_data.generated and _monument.upgrades then
       -- check to see if it's been destroyed
       local _position = _global_data.position
-      local _surface = Monument.get_surface( _monument )
+      local _surface = _monument:get_surface()
       local _entity = _surface.find_entity(_global_data.entity_name, _position)
       if not _entity then
-        Monument.downgrade( _monument.name )
+        _monument:downgrade()
       else
         -- check if upgrade item is in our inventory
         if _entity and _entity.get_output_inventory() then
           for _item_name, _ in pairs(_monument.upgrades) do
             if _entity.valid and _entity.get_output_inventory().find_item_stack(_item_name) then
-              Monument.upgrade( _monument.name, _item_name )
+              _monument:upgrade( _item_name )
             end
           end
         end
@@ -351,7 +349,7 @@ Event.register(defines.events.on_tick, function(event)
       local _biter_data = _monument.upgrades[_global_data.upgrade_name].attract_biters
       
       if lerp( _biter_data.chance, game.evolution_factor ) > math.random() then
-        local _surface = Monument.get_surface( _monument )
+        local _surface = _monument:get_surface()
         local _entity = _surface.find_entity(_global_data.entity_name, _global_data.position)
 
         local _unit_count = lerp( _biter_data.count, game.evolution_factor )
@@ -367,30 +365,5 @@ Event.register(defines.events.on_entity_died, function(event)
   -- TODO cache off current monument for entity
   -- downgrade_monument( "" )
 end)
-
--- Script Interface
-remote.add_interface("k-monuments", {
-  register_monument = function( data )
-    Monument.register( data )
-  end,
-  reveal_monument = function( name )
-    Monument.reveal( name )
-  end,
-  upgrade_monument = function( name, upgrade_name )
-    Monument.upgrade( name, upgrade_name )
-  end,
-  downgrade_monument = function( name )
-    Monument.downgrade( name )
-  end,
-  get_monument_entity = function( name )
-    return Monument.get_entity( name )
-  end,
-  get_monument_data = function( name )
-    return Monument.data[name]
-  end,
-  get_global_data = function( name )
-    return Monument.get_global_data( name )
-  end
- })
 
 

@@ -1,5 +1,6 @@
 
--- REGISTRATION DATA
+Transporter = {
+  data = {}
 -- ["entity_name"] = {
 --  entity_name = "",
 --  is_cave = "",                 -- world name
@@ -22,11 +23,9 @@
 --  rocket_item = "",             -- item in inventory required to blast off
 --  rocket_progress = 0.0,        -- rocket progress required for silos to blast off
 -- }
-
-Transporter = {
-  data = {}
 }
 
 Transporter.register = function( data )
   Transporter.data[data.entity_name] = data
 end
+

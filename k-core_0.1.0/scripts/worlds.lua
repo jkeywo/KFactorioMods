@@ -1,5 +1,6 @@
 
--- REGISTRATION DATA
+World = {
+  data = {},
 -- ["surface_name"] = {
 --   surface_name = "",       -- Surface name, also used internally as the world name.
 --   localised_name = "",     -- Localised name tag.
@@ -17,9 +18,6 @@
 --   map_gen_settings = nil,  -- Merged with, and overwrites, nauvis map_gen_settings. See api for details.
 --   unlocked = false
 -- }
-
-World = {
-  data = {},
   starting = "nauvis",
   default_off_checked = false,
   default_off_controls = {},

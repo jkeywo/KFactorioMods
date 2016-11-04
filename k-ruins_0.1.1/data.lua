@@ -1,5 +1,6 @@
 
 require("config")
+require("shared-data")
 
 data:extend(
 {

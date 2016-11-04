@@ -1,6 +1,7 @@
 
-local composite_entities = {}
--- {
+CompositeEntities = {
+  data = {}
+-- [""} = {
 --    base_entity = "",
 --    component_entities = 
 --    {
@@ -10,6 +11,8 @@ local composite_entities = {}
 --      lable="train-stop-name"
 --    }
 -- }
+}
+
 -- global.composite_entities = { { type="name", entity_list = {} } }
 -- global.composite_entity_parent = { [entity] = parent_index }
 
@@ -27,16 +30,17 @@ local function rotate_offset( offset, direction )
   return offset
 end
 
-function register_composite( data )
-  composite_entities[data.base_entity] = data
+CompositeEntities.register_composite = function( data )
+  setmetatable(data, {__index = CompositeEntities})
+  CompositeEntities.data[data.base_entity] = data
 end
 
-function create_linked(entity)
+CompositeEntities.create_linked = function(entity)
   global.composite_entity_parent = global.composite_entity_parent or {}
   global.composite_entities = global.composite_entities or {}
   
   -- record base entity
-  local _data = composite_entities[entity.name]
+  local _data = CompositeEntities.data[entity.name]
   if _data then
     local _new_global = { type = entity.name, entity_list = {} }
     local _new_global_index = (#global.composite_entities) + 1
@@ -66,7 +70,7 @@ function create_linked(entity)
   return { entity }
 end
 
-function destroy_linked(entity)
+CompositeEntities.destroy_linked = function(entity)
   global.composite_entity_parent = global.composite_entity_parent or {}
   global.composite_entities = global.composite_entities or {}
   
@@ -90,7 +94,7 @@ Event.register({
       defines.events.on_built_entity,
       defines.events.on_robot_built_entity,
     }, function(event)
-  create_linked( event.created_entity )
+  CompositeEntities.create_linked( event.created_entity )
 end)
 
 -- event - on destroyed/mined
@@ -99,23 +103,5 @@ Event.register({
       defines.events.on_robot_pre_mined,
       defines.events.on_entity_died,
     }, function(event)
-  destroy_linked( event.entity )
+  CompositeEntities.data.destroy_linked( event.entity )
 end)
-
-remote.add_interface( "k-composite-entities", {
-    register_composite = function( data )
-      register_composite( data )
-    end,
-    get_linked_entities = function( entity )
-      return global.composite_entity_parent[entity].entity_list
-    end,
-    get_composite_data = function( entity )
-      return composite_entities[ global.composite_entity_parent[entity].type ]
-    end,
-    on_create = function( entity )
-      create_linked( entity )
-    end,
-    on_destroyed = function( entity )
-      destroy_linked( entity )
-    end,
-  })

@@ -1,7 +1,10 @@
+
 require("stdlib.event.event")
 require("stdlib.time")
 
 require("config")
+require("shared-data")
+
 if Config.obelisks then
   require("scripts.obelisk")
 end
