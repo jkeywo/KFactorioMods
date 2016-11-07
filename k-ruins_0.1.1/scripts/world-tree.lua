@@ -22,3 +22,7 @@ remote.call( "k-composite-entities", "register_composite", {
         { entity_name = "invisible-label-1x1", offset = { x=0, y=0 }, operable=false, lable="Yggdrasil's Corpse" }
       }
     })
+
+Event.register(defines.events.on_trigger_created_entity, function(event)
+  
+end)

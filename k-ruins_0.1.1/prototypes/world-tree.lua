@@ -111,7 +111,7 @@ data:extend(
   {
     type = "capsule",
     name = "seed-pod",
-    icon = "__base__/graphics/icons/grenade.png",
+    icon = "__base__/graphics/icons/tree-01.png",
     flags = {"goes-to-quickbar"},
     capsule_action =
     {
@@ -120,7 +120,7 @@ data:extend(
       {
         type = "projectile",
         ammo_category = "capsule",
-        cooldown = 1,
+        cooldown = 60,
         projectile_creation_distance = 0.6,
         range = 20,
         ammo_type =
@@ -158,26 +158,29 @@ data:extend(
       target_effects =
       {
         type = "create-entity",
+        trigger_createdentity=true,
+        check_buildability = false,
         show_in_tooltip = true,
         entity_name = "tree-01",
-        offsets = {{-0.7, -0.7},{-0.7, 0.7},{0.7, -0.7},{0.7, 0.7},{0, 0}}
       }
     },
-    light = {intensity = 0.5, size = 4},
+    light = {intensity = 0.1, size = 1},
     animation =
     {
-      filename = "__base__/graphics/entity/combat-robot-capsule/destroyer-capsule.png",
-      frame_count = 1,
-      width = 32,
-      height = 32,
+      filename = "__base__/graphics/entity\acid-projectile-purple/acid-projectile-purple.png",
+      frame_count = 33,
+      line_length = 5,
+      width = 16,
+      height = 18,
       priority = "high"
     },
     shadow =
     {
-      filename = "__base__/graphics/entity/combat-robot-capsule/combat-robot-capsule-shadow.png",
-      frame_count = 1,
-      width = 32,
-      height = 32,
+      filename = "__base__/graphics/entity\acid-projectile-purple/acid-projectile-purple-shadow.png",
+      frame_count = 33,
+      line_length = 5,
+      width = 28,
+      height = 16,
       priority = "high"
     },
     smoke = capsule_smoke
