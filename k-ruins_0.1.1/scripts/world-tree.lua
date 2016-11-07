@@ -15,6 +15,10 @@ remote.call("k-monuments", "register_monument", {
     }
   })
 
--- no events
-
--- no way to reveal
+remote.call( "k-composite-entities", "register_composite", {
+      base_entity = "world-tree-dead",
+      component_entities = {
+        { entity_name = "world-tree-dead", offset = { x=0, y=0 } },
+        { entity_name = "invisible-label-1x1", offset = { x=0, y=0 }, operable=false, lable="Yggdrasil's Corpse" }
+      }
+    })

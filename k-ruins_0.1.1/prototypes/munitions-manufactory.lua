@@ -8,7 +8,7 @@ data:extend(
   {
     type = "item",
     name = "restored-munitions-manufactory",
-    icon = "__k-ruins__/graphics/munitions_manufactory.png",
+    icon = "__k-ruins__/graphics/manufactory/munitions_manufactory_icon.png",
     flags = {"goes-to-main-inventory"},
     subgroup = "ruins",
     order = "z[munitions-manufactory]",
@@ -29,7 +29,7 @@ data:extend(
   {
     type = "assembling-machine",
     name = "munitions-manufactory-vines",
-    icon = "__k-ruins__/graphics/munitions_manufactory_vines.png",
+    icon = "__k-ruins__/graphics/manufactory/munitions_manufactory_icon.png",
     flags = { "placeable-neutral" },
     max_health = 250,
     corpse = "big-remnants",
@@ -42,8 +42,8 @@ data:extend(
       }
     },
     order = "a-b-a",
-    collision_box = {{-1.9, -1.9}, {1.9, 1.9}},
-    selection_box = {{-1.5, -1.5}, {1.5, 1.5}},
+    collision_box = {{-1.7, -1.7}, {1.7, 1.7}},
+    selection_box = {{-1.9, -1.9}, {1.9, 1.9}},
     vehicle_impact_sound =  { filename = "__base__/sound/car-metal-impact.ogg", volume = 0.65 },
     working_sound =
     {
@@ -88,7 +88,7 @@ data:extend(
   {
     type = "ammo",
     name = "vanir-rounds-magazine",
-    icon = "__base__/graphics/icons/piercing-rounds-magazine.png",
+    icon = "__k-ruins__/graphics/manufactory/vanir-ammo-icon.png",
     flags = {"goes-to-main-inventory"},
     ammo_type =
     {
@@ -134,12 +134,13 @@ data:extend(
     },
     result = "vanir-rounds-magazine",
     result_count = 10,
+    energy_required = 2,
     category = "vanir-ammo"
   },
   {
     type = "assembling-machine",
     name = "munitions-manufactory",
-    icon = "__k-ruins__/graphics/munitions_manufactory.png",
+    icon = "__k-ruins__/graphics/manufactory/munitions_manufactory_icon.png",
     flags = { "placeable-neutral" },
     max_health = 250,
     corpse = "big-remnants",
@@ -152,8 +153,8 @@ data:extend(
       }
     },
     order = "a-b-a",
-    collision_box = {{-1.9, -1.9}, {1.9, 1.9}},
-    selection_box = {{-1.5, -1.5}, {1.5, 1.5}},
+    collision_box = {{-1.7, -1.7}, {1.7, 1.7}},
+    selection_box = {{-1.9, -1.9}, {1.9, 1.9}},
     vehicle_impact_sound =  { filename = "__base__/sound/car-metal-impact.ogg", volume = 0.65 },
     working_sound =
     {
@@ -172,13 +173,13 @@ data:extend(
     },
     animation =
     {
-      filename = "__k-ruins__/graphics/munitions_manufactory.png",
+      filename = "__k-ruins__/graphics/manufactory/munitions_manufactory.png",
       priority = "high",
-      width = 98,
-      height = 107,
-      frame_count = 1,
-      line_length = 1,
-      shift = {0.4, -0.06}
+      width = 182,
+      height = 182,
+      frame_count = 64,
+      line_length = 8,
+      shift = {0.4, -0.66}
     },
     energy_source =
     {

@@ -19,8 +19,14 @@ remote.call("k-monuments", "register_monument", {
     }
   })
 
--- no events
-
+remote.call( "k-composite-entities", "register_composite", {
+      base_entity = "munitions-manufactory-vines",
+      component_entities = {
+        { entity_name = "munitions-manufactory-vines", offset = { x=0, y=0 } },
+        { entity_name = "invisible-label-1x1", offset = { x=0, y=0 }, operable=false, lable="Ruined Munitions Manufactory" }
+      }
+    })
+  
 -- reveal on research military 4
 Event.register(defines.events.on_research_finished, function(event)
   if event.research.name == "military-4" then

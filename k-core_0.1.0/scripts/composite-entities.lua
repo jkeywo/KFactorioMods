@@ -103,5 +103,5 @@ Event.register({
       defines.events.on_robot_pre_mined,
       defines.events.on_entity_died,
     }, function(event)
-  CompositeEntities.data.destroy_linked( event.entity )
+  CompositeEntities.destroy_linked( event.entity )
 end)

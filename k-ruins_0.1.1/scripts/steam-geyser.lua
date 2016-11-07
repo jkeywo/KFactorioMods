@@ -20,9 +20,13 @@ remote.call("k-monuments", "register_monument", {
   }
 })
 
--- no events
-
--- no reveal
+remote.call( "k-composite-entities", "register_composite", {
+      base_entity = "steam-geyser-bare",
+      component_entities = {
+        { entity_name = "steam-geyser-bare", offset = { x=0, y=0 } },
+        { entity_name = "invisible-label-1x1", offset = { x=0, y=0 }, operable=false, lable="Steam Geyser" }
+      }
+    })
 
 -- if the pump has created any water, make it 100 degrees
 Event.register(defines.events.on_tick, function(event)
