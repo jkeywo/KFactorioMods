@@ -95,6 +95,7 @@ Monument.place = function( name_or_data )
   -- clear area of doodads and other entities
   local _obstructions = _surface.find_entities(_surrounding_area)
   for _, _obstruction in pairs(_obstructions) do
+    CompositeEntities.destroy_linked( _obstruction )
     _obstruction.destroy()
   end
   -- place down the default flooring
@@ -225,6 +226,7 @@ Monument.upgrade = function( name_or_data, upgrade_name )
   local _entity = _surface.find_entity( _data.entity_name, _global_data.position )
   if _entity then 
     _force = _entity.force
+    CompositeEntities.destroy_linked(_entity)
     _entity.destroy()
   end
   
@@ -274,6 +276,7 @@ Monument.downgrade = function( name_or_data, upgrade_name )
   local _entity = _surface.find_entity( _global_data.entity_name, _global_data.position )
   if _entity then
     _force = _entity.force
+    CompositeEntities.destroy_linked( _entity )
     _entity.destroy()
   end
   

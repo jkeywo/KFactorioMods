@@ -1,4 +1,5 @@
 
+require("stdlib.area.area")
 require("stdlib.event.event")
 require("stdlib.time")
 

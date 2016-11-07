@@ -48,23 +48,52 @@ CompositeEntities.create_linked = function(entity)
     local _position = entity.position
     local _direction = entity.direction
     local _force = entity.force
-    entity.destroy()
-    for _, _child in pairs(_data.component_entities) do
-      local _new_child = _surface.create_entity { 
-        name = _child.entity_name,
-        direction  = _direction,
-        surface = _surface,
-        position = Tile.from_position( Position.add( _position, rotate_offset( _child.offset, _direction ) ) ),
-        force = _force
-      }
-      if _child.operable ~= nil then _new_child.operable = _child.operable end
-      if _child.lable ~= nil and _new_child.supports_backer_name() then _new_child.backer_name = _child.lable end
-      
-      table.insert( _new_global.entity_list, _new_child )
-      global.composite_entity_parent[_new_child.unit_number] = _new_global_index
+    
+    if _data.keep_cluster == nil then _data.keep_cluster = true end
+    
+    if _data.destroy_origional == nil then _data.destroy_origional = true end
+    if _data.destroy_origional then
+      entity.destroy()
+    elseif _data.keep_cluster then
+      table.insert( _new_global.entity_list, entity )
+      global.composite_entity_parent[entity.unit_number] = _new_global_index
     end
     
-    global.composite_entities[_new_global_index] = _new_global
+    for _, _child in pairs(_data.component_entities) do
+      local _child_name = _child.entity_name
+      if type(_child_name) == "table" then
+        _child_name = _child_name[math.random(1, #_child_name)]
+      end
+      
+      local _offset = _child.offset and Position.to_table(_child.offset) or { x=0, y=0 }
+      if _child.offset_area then
+        _child.offset_area = Area.to_table(_child.offset_area)
+        _offset.x = _offset.x + _child.offset_area.left_top.x + (math.random() * (_child.offset_area.right_bottom.x - _child.offset_area.left_top.x))
+        _offset.y = _offset.y + _child.offset_area.left_top.y + (math.random() * (_child.offset_area.right_bottom.y - _child.offset_area.left_top.y))
+      end
+      
+      local _position = Tile.from_position( Position.add( _position, rotate_offset( _offset, _direction ) ) )
+      if not _child.can_fail or _surface.can_place_entity({ name = _child_name, direction  = _direction, position = _position, force = _force }) then
+        local _new_child = _surface.create_entity { 
+          name = _child_name,
+          direction  = _direction,
+          surface = _surface,
+          position = _position,
+          force = _force
+        }
+        if _child.operable ~= nil then _new_child.operable = _child.operable end
+        if _child.lable ~= nil and _new_child.supports_backer_name() then _new_child.backer_name = _child.lable end
+        
+        if _data.keep_cluster then
+          table.insert( _new_global.entity_list, _new_child )
+          global.composite_entity_parent[_new_child.unit_number] = _new_global_index
+        end
+      end
+    end
+    
+    if _data.keep_cluster then
+      global.composite_entities[_new_global_index] = _new_global
+    end
     return _new_global.entity_list
   end
   return { entity }
@@ -93,8 +122,13 @@ end
 Event.register({
       defines.events.on_built_entity,
       defines.events.on_robot_built_entity,
+      defines.events.on_trigger_created_entity
     }, function(event)
-  CompositeEntities.create_linked( event.created_entity )
+  if event.created_entity then
+    CompositeEntities.create_linked( event.created_entity )
+  elseif event.entity then
+    CompositeEntities.create_linked( event.entity )
+  end
 end)
 
 -- event - on destroyed/mined

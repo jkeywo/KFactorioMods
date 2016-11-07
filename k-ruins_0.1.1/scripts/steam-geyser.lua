@@ -22,8 +22,8 @@ remote.call("k-monuments", "register_monument", {
 
 remote.call( "k-composite-entities", "register_composite", {
       base_entity = "steam-geyser-bare",
+      destroy_origional = false,
       component_entities = {
-        { entity_name = "steam-geyser-bare", offset = { x=0, y=0 } },
         { entity_name = "invisible-label-1x1", offset = { x=0, y=0 }, operable=false, lable="Steam Geyser" }
       }
     })

@@ -1,6 +1,10 @@
 -- add data for entities
+
+local _tree_cluster = table.deepcopy( data.raw["tree"]["tree-01"] )
+_tree_cluster.name = "tree-cluster"
 data:extend(
 {
+  _tree_cluster,
   {
     type = "item",
     name = "fertiliser",
@@ -151,23 +155,23 @@ data:extend(
     acceleration = 0.005,
     action =
     {
-      type = "cluster",
-      cluster_count = 7,
-      distance = 4,
-      distance_deviation = 3,
-      target_effects =
+      type = "direct",
+      action_delivery =
       {
-        type = "create-entity",
-        trigger_createdentity=true,
-        check_buildability = false,
-        show_in_tooltip = true,
-        entity_name = "tree-01",
+        type = "instant",
+        target_effects =
+        {
+          type = "create-entity",
+          entity_name = "tree-cluster",
+          trigger_created_entity = true,
+          offsets = {{0, 0}}
+        }
       }
     },
     light = {intensity = 0.1, size = 1},
     animation =
     {
-      filename = "__base__/graphics/entity\acid-projectile-purple/acid-projectile-purple.png",
+      filename = "__base__/graphics/entity/acid-projectile-purple/acid-projectile-purple.png",
       frame_count = 33,
       line_length = 5,
       width = 16,
@@ -176,7 +180,7 @@ data:extend(
     },
     shadow =
     {
-      filename = "__base__/graphics/entity\acid-projectile-purple/acid-projectile-purple-shadow.png",
+      filename = "__base__/graphics/entity/acid-projectile-purple/acid-projectile-purple-shadow.png",
       frame_count = 33,
       line_length = 5,
       width = 28,
