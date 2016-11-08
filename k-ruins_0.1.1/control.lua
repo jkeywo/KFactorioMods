@@ -1,5 +1,6 @@
 
 require("stdlib.area.area")
+require("stdlib.area.tile")
 require("stdlib.event.event")
 require("stdlib.time")
 
@@ -24,4 +25,6 @@ end
 if Config.deep_mine then
   require("scripts.deep-mine")
 end
-  
+if Config.war_shrine then
+  require("scripts.war-shrine")
+end

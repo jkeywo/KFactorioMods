@@ -19,10 +19,10 @@ remote.call("k-monuments", "register_monument", {
   })
 
 remote.call( "k-composite-entities", "register_composite", {
-      base_entity = "war-shrine",
+      base_entity = "war-shrine-ruined",
       destroy_origional = false,
       component_entities = {
-        { entity_name = "invisible-label-1x1", offset = { x=0, y=0 }, operable=false, lable="Ruined War Shrine" }
+        { entity_name = "invisible-label-1x1", offset = { x=0, y=0 }, operable=false, lable="Ruined Shrine" }
       }
     })
 
@@ -71,25 +71,26 @@ Event.register(defines.events.on_entity_died, function(event)
     -- incriment buff amount
     update_buffs( 1.0 )
   end
-})
+end)
 
 Event.register(defines.events.on_tick, function(event)
+
   global.war_shrine = global.war_shrine or { buff_amount = 0.0, buff_rank = 0 }
   
   -- decriment buff amount
-  update_buffs( Config.war_shrine.decay_per_tick[global.war_shrine.buff_rank + 1] / Time.SECONDS )
+  update_buffs( Config.war_shrine.decay_per_tick[global.war_shrine.buff_rank + 1] / Time.SECOND )
   
-  local _regen = global.war_shrine.buff_effects[global.war_shrine.buff_rank] 
-              and global.war_shrine.buff_effects[global.war_shrine.buff_rank].regeneration or nil
+  local _regen = Config.war_shrine.buff_effects[global.war_shrine.buff_rank] 
+              and Config.war_shrine.buff_effects[global.war_shrine.buff_rank].regeneration or nil
   if _regen then
     -- update regen if it's active
     for _, _player in game.players do
-      _player.character.health = _player.character.health + (_regen / Time.SECONDS)
+      _player.character.health = _player.character.health + (_regen / Time.SECOND)
     end
   end
   
-  local _death_aura = global.war_shrine.buff_effects[global.war_shrine.buff_rank] 
-                  and global.war_shrine.buff_effects[global.war_shrine.buff_rank].death_aura or nil
+  local _death_aura = Config.war_shrine.buff_effects[global.war_shrine.buff_rank] 
+                  and Config.war_shrine.buff_effects[global.war_shrine.buff_rank].death_aura or nil
   if _death_aura then
     -- update death aura if it's active
     local _enemy_force = game.forces["enemy"]
@@ -97,11 +98,11 @@ Event.register(defines.events.on_tick, function(event)
       local _enemies = _player.surface.find_entities_filtered { 
             area = Position.expand_to_area(_player.character.position, 5), force = "enemy" }
       for _, _enemy in _enemies do
-        _enemy.damage( _death_aura / Time.SECONDS, _player.force )
+        _enemy.damage( _death_aura / Time.SECOND, _player.force )
       end
     end
   end
-})
+end)
 
 
 

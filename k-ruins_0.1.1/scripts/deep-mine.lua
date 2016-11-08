@@ -18,16 +18,22 @@ remote.call("k-monuments", "register_monument", {
     }
   })
 
-local iron_chest_offset = { x-2, y=0 }
-local copper_chest_offset = { x2, y=0 }
+remote.call( "k-composite-entities", "register_composite", {
+      base_entity = "deep-mine-ruined",
+      destroy_origional = false,
+      component_entities = {
+        { entity_name = "invisible-label-1x1", offset = { x=0, y=0 }, operable=false, lable="Ruined Mine" },
+      }
+    })
+
+local iron_chest_offset = { x=-1, y=0 }
+local copper_chest_offset = { x=1, y=0 }
 remote.call( "k-composite-entities", "register_composite", {
       base_entity = "deep-mine",
+      destroy_origional = false,
       component_entities = {
-        { entity_name = "invisible-label-5x1", offset = { x=-2, y=-2 }, operable=false, lable="Ruined Munitions Manufactory" }
-        { entity_name = "deep-mine", offset = { x=-2, y=1 }, operable=false }
-        { entity_name = "wooden-chest", offset = iron_chest_offset, operable=false }
-        { entity_name = "loader", offset = { x=2, y=1 }, operable=false }
-        { entity_name = "wooden-chest", offset = copper_chest_offset, operable=false }
+        { entity_name = "underground-belt", offset = iron_chest_offset, operable=false, type="output", direction=4 },
+        { entity_name = "underground-belt", offset = copper_chest_offset, operable=false, type="output", direction=4 }
       }
     })
   
@@ -36,13 +42,10 @@ Event.register(defines.events.on_tick, function(event)
     -- iron
     local _surface = game.surfaces["nauvis"]
     local _global_data = remote.call("k-monuments", "get_global_data", "deep-mine")
-    local _position = Position.add( _global_data.position, iron_chest_offset )
-    local _entity = _surface.find_entity("wooden-chest",_position)
+    local _position = Tile.from_position( Position.add( _global_data.position, iron_chest_offset ) )
+    local _entity = _surface.find_entity("underground-belt", _position)
     if _entity then
-      local _inventory = _entity.get_inventory(defines.inventory.chest)
-      if _inventory and _inventory.get_item_count("iron-ore") < 40 then
-        _inventory.insert( {name="iron-ore", count=40} )
-      end
+      _entity.insert( {name="iron-ore", count=40} )
     end
   elseif game.tick % 60 == 30 then
     -- copper
@@ -51,10 +54,7 @@ Event.register(defines.events.on_tick, function(event)
     local _position = Position.add( _global_data.position, copper_chest_offset )
     local _entity = _surface.find_entity("wooden-chest",_position)
     if _entity then
-      local _inventory = _entity.get_inventory(defines.inventory.chest)
-      if _inventory and _inventory.get_item_count("copper-ore") < 40 then
-        _inventory.insert( {name="copper-ore", count=40} )
-      end
+      _entity.insert( {name="copper-ore", count=40} )
     end
   end
-})
+end)

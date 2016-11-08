@@ -22,7 +22,7 @@ data:extend(
     enabled = true,
     ingredients =
     {
-      { "alien-artefacts", 1000 }
+      { "alien-artifact", 1000 }
     },
     result = "restored-war-shrine",
     category = "restore-war-shrine"

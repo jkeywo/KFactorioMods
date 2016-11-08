@@ -8,15 +8,15 @@ Config = {
   steam_geyser = true,
   munitions_manufactory = true,
   rocket_silo = true,
-  deep_mine = false,
-  war_shrine = false
-  --{
-  --  kills_per_rank = { 10, 30, 60 },
-  --  decay_per_tick = { -0.1, -0.1, -0.3, -1.0 },
-  --  buff_effects = {
-  --    { modifier="character_running_speed_modifier", amount=0.3  },
-  --    { modifier="character_health_bonus", amount=50, regeneration=5 },
-  --    { regeneration=5, death_aura=100 }
-  --  }
-  --},
+  deep_mine = true,
+  war_shrine =
+  {
+    kills_per_rank = { 10, 30, 60 },
+    decay_per_tick = { -0.1, -0.1, -0.3, -1.0 },
+    buff_effects = {
+      { modifier="character_running_speed_modifier", amount=0.3  },
+      { modifier="character_health_bonus", amount=50, regeneration=5 },
+      { regeneration=5, death_aura=100 }
+    }
+  },
 }

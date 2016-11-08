@@ -172,7 +172,7 @@ Monument.finalise_registration = function( name_or_data )
   -- generate global data
   local _global_data = {
       generated = false,
-      position = _final_position,
+      position = Tile.from_position(_final_position),
       upgrade_name = nil,
       entity_name = _data.entity_name
     }

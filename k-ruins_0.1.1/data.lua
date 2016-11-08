@@ -42,4 +42,7 @@ end
 if Config.deep_mine then
   require("prototypes.deep-mine")
 end
+if Config.war_shrine then
+  require("prototypes.war-shrine")
+end
 

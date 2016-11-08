@@ -50,8 +50,8 @@ CompositeEntities.create_linked = function(entity)
     local _force = entity.force
     
     if _data.keep_cluster == nil then _data.keep_cluster = true end
-    
     if _data.destroy_origional == nil then _data.destroy_origional = true end
+    
     if _data.destroy_origional then
       entity.destroy()
     elseif _data.keep_cluster then
@@ -72,15 +72,18 @@ CompositeEntities.create_linked = function(entity)
         _offset.y = _offset.y + _child.offset_area.left_top.y + (math.random() * (_child.offset_area.right_bottom.y - _child.offset_area.left_top.y))
       end
       
-      local _position = Tile.from_position( Position.add( _position, rotate_offset( _offset, _direction ) ) )
-      if not _child.can_fail or _surface.can_place_entity({ name = _child_name, direction  = _direction, position = _position, force = _force }) then
-        local _new_child = _surface.create_entity { 
-          name = _child_name,
-          direction  = _direction,
-          surface = _surface,
-          position = _position,
-          force = _force
-        }
+      local _new_direction = _direction
+      if _child.direction then
+        _new_direction = (_new_direction + _child.direction) % 8
+      end
+      
+      local _new_position = Tile.from_position( Position.add( _position, rotate_offset( _offset, _direction ) ) )
+      local _parameters = { name = _child_name, direction  = _new_direction, position = _new_position, surface = _surface, force = _force }
+      if _child.type then
+        _parameters.type = _child.type
+      end
+      if not _child.can_fail or _surface.can_place_entity(_parameters) then
+        local _new_child = _surface.create_entity(_parameters)
         if _child.operable ~= nil then _new_child.operable = _child.operable end
         if _child.lable ~= nil and _new_child.supports_backer_name() then _new_child.backer_name = _child.lable end
         
