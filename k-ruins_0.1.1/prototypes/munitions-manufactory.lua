@@ -8,7 +8,7 @@ data:extend(
   {
     type = "item",
     name = "restored-munitions-manufactory",
-    icon = "__k-ruins__/graphics/manufactory/munitions_manufactory_icon.png",
+    icon = "__k-ruins__/graphics/manufactory/munitions-manufactory-icon.png",
     flags = {"goes-to-main-inventory"},
     subgroup = "ruins",
     order = "z[munitions-manufactory]",
@@ -29,7 +29,7 @@ data:extend(
   {
     type = "assembling-machine",
     name = "munitions-manufactory-vines",
-    icon = "__k-ruins__/graphics/manufactory/munitions_manufactory_icon.png",
+    icon = "__k-ruins__/graphics/manufactory/munitions-manufactory-icon.png",
     flags = { "placeable-neutral" },
     max_health = 250,
     corpse = "big-remnants",
@@ -42,8 +42,8 @@ data:extend(
       }
     },
     order = "a-b-a",
-    collision_box = {{-1.7, -1.7}, {1.7, 1.7}},
-    selection_box = {{-1.9, -1.9}, {1.9, 1.9}},
+    collision_box = {{-2.1, -2.1}, {2.1, 2.1}},
+    selection_box = {{-2.4, -2.4}, {2.4, 2.4}},
     vehicle_impact_sound =  { filename = "__base__/sound/car-metal-impact.ogg", volume = 0.65 },
     working_sound =
     {
@@ -62,13 +62,13 @@ data:extend(
     },
     animation =
     {
-      filename = "__k-ruins__/graphics/munitions_manufactory_vines.png",
+      filename = "__k-ruins__/graphics/manufactory/munitions-manufactory-ruined.png",
       priority = "high",
-      width = 98,
-      height = 107,
+      width = 180,
+      height = 180,
       frame_count = 1,
       line_length = 1,
-      shift = {0.4, -0.06}
+      shift = {0.4, -0.66}
     },
     energy_source =
     {
@@ -140,7 +140,7 @@ data:extend(
   {
     type = "assembling-machine",
     name = "munitions-manufactory",
-    icon = "__k-ruins__/graphics/manufactory/munitions_manufactory_icon.png",
+    icon = "__k-ruins__/graphics/manufactory/munitions-manufactory-icon.png",
     flags = { "placeable-neutral" },
     max_health = 250,
     corpse = "big-remnants",
@@ -153,8 +153,8 @@ data:extend(
       }
     },
     order = "a-b-a",
-    collision_box = {{-1.7, -1.7}, {1.7, 1.7}},
-    selection_box = {{-1.9, -1.9}, {1.9, 1.9}},
+    collision_box = {{-2.1, -2.1}, {2.1, 2.1}},
+    selection_box = {{-2.4, -2.4}, {2.4, 2.4}},
     vehicle_impact_sound =  { filename = "__base__/sound/car-metal-impact.ogg", volume = 0.65 },
     working_sound =
     {
@@ -173,7 +173,7 @@ data:extend(
     },
     animation =
     {
-      filename = "__k-ruins__/graphics/manufactory/munitions_manufactory.png",
+      filename = "__k-ruins__/graphics/manufactory/munitions-manufactory.png",
       priority = "high",
       width = 182,
       height = 182,

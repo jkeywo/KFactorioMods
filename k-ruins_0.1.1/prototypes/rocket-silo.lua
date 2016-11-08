@@ -67,7 +67,7 @@ data:extend(
     },
     animation =
     {
-      filename = "__k-ruins__/graphics/silo_vines.png",
+      filename = "__k-ruins__/graphics/rocket-silo/rocket-silo-ruined.png",
       priority = "high",
       width = 352,
       height = 384,
