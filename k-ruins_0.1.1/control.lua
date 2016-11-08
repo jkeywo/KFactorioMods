@@ -21,3 +21,7 @@ end
 if Config.steam_geyser then
   require("scripts.steam-geyser")
 end
+if Config.deep_mine then
+  require("scripts.deep-mine")
+end
+  

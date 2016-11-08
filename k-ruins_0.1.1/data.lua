@@ -39,4 +39,7 @@ end
 if Config.steam_geyser then
   require("prototypes.steam-geyser")
 end
+if Config.deep_mine then
+  require("prototypes.deep-mine")
+end
 
