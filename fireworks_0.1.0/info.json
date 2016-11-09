@@ -1,0 +1,11 @@
+{
+  "name": "fireworks",
+  "version": "0.1.0",
+  "factorio_version": "0.14",
+  "title": "Fireworks",
+  "description": "Some fireworks for recreational use.",
+  "author": "John K",
+  "contact": "jkeywo@yahoo.co.uk",
+  "homepage": "",
+  "dependencies": ["base >= 0.14.0"]
+}

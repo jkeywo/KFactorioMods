@@ -1,10 +1,10 @@
 -- register data
-remote.call("k-monuments", "register_monument", {
+local _data = {
     name = "deep-mine",
     entity_name = "deep-mine-ruined",
     parent_mod_name = "k-ruins",
     position = {
-      offset = { 500, 800 },
+      offset = { 50, 80 },
     },
     upgrades = {
       ["restored-deep-mine"] = {
@@ -13,10 +13,24 @@ remote.call("k-monuments", "register_monument", {
           chance = 0.5,
           cycle = 90 * Time.SECOND,
           count = { 2, 40 },
-        }
+        },
+        on_placed = script.generate_event_name(),
+        on_removed = script.generate_event_name()
       }
     }
-  })
+  }
+  
+remote.call( "k-monuments", "register_monument", _data )
+Event.register( _data.upgrades["restored-deep-mine"].on_placed, function(event)
+  global.deep_mine = global.deep_mine or {}
+  -- add underground belts to global data
+  global.deep_mine.iron = event.entities[2]
+  global.deep_mine.copper = event.entities[3]
+end)
+Event.register( _data.upgrades["restored-deep-mine"].on_removed, function(event)
+  -- remove underground belts from global data
+  global.deep_mine = nil
+end)
 
 remote.call( "k-composite-entities", "register_composite", {
       base_entity = "deep-mine-ruined",
@@ -26,35 +40,24 @@ remote.call( "k-composite-entities", "register_composite", {
       }
     })
 
-local iron_chest_offset = { x=-1, y=0 }
-local copper_chest_offset = { x=1, y=0 }
 remote.call( "k-composite-entities", "register_composite", {
       base_entity = "deep-mine",
       destroy_origional = false,
       component_entities = {
-        { entity_name = "underground-belt", offset = iron_chest_offset, operable=false, type="output", direction=4 },
-        { entity_name = "underground-belt", offset = copper_chest_offset, operable=false, type="output", direction=4 }
+        { entity_name = "steel-chest", offset = { x=-1, y=0 }, operable=false },
+        { entity_name = "steel-chest", offset = { x=1, y=0 }, operable=false }
       }
     })
   
 Event.register(defines.events.on_tick, function(event)
-  if game.tick % 60 == 0 then
+  if game.tick % 9 == 0 and global.deep_mine then
     -- iron
-    local _surface = game.surfaces["nauvis"]
-    local _global_data = remote.call("k-monuments", "get_global_data", "deep-mine")
-    local _position = Tile.from_position( Position.add( _global_data.position, iron_chest_offset ) )
-    local _entity = _surface.find_entity("underground-belt", _position)
-    if _entity then
-      _entity.insert( {name="iron-ore", count=40} )
+    if global.deep_mine.iron then
+      global.deep_mine.iron.insert( {name="iron-ore", count=2} )
     end
-  elseif game.tick % 60 == 30 then
     -- copper
-    local _surface = game.surfaces["nauvis"]
-    local _global_data = remote.call("k-monuments", "get_global_data", "deep-mine")
-    local _position = Position.add( _global_data.position, copper_chest_offset )
-    local _entity = _surface.find_entity("wooden-chest",_position)
-    if _entity then
-      _entity.insert( {name="copper-ore", count=40} )
+    if global.deep_mine.copper then
+      global.deep_mine.copper.insert( {name="copper-ore", count=2} )
     end
   end
 end)
