@@ -44,8 +44,8 @@ data:extend(
       }
     },
     order = "a-b-a",
-    collision_box = {{-1.2, -1.2}, {1.2, 1.2}},
-    selection_box = {{-1.5, -1.5}, {1.5, 1.5}},
+    collision_box = {{-2.4, -2.4}, {2.4, 2.4}},
+    selection_box = {{-3.0, -3.0}, {3.0, 3.0}},
     vehicle_impact_sound =  { filename = "__base__/sound/car-stone-impact.ogg", volume = 0.65 },
     working_sound =
     {
@@ -64,13 +64,13 @@ data:extend(
     },
     animation =
     {
-      filename = "__k-ruins__/graphics/obelisk/obelisk_ruined.png",
+      filename = "__k-ruins__/graphics/obelisk/obelisk-ruined.png",
       priority = "high",
-      width = 90,
-      height = 90,
+      width = 303,
+      height = 190,
       frame_count = 1,
       line_length = 1,
-      shift = { 0.875, -0.5625},
+      shift = { 0.5, -0.0},
     },
     energy_source =
     {
@@ -90,8 +90,8 @@ data:extend(
     max_health = 1000,
     corpse = "big-remnants",
     dying_explosion = "medium-explosion",
-    collision_box = {{-1.2, -1.2}, {1.2, 1.2}},
-    selection_box = {{-1.5, -1.5}, {1.5, 1.5}},
+    collision_box = {{-2.4, -2.4}, {2.4, 2.4}},
+    selection_box = {{-3.0, -3.0}, {3.0, 3.0}},
     allowed_effects = {"consumption", "speed", "pollution"},
     base_picture =
     {
@@ -104,11 +104,11 @@ data:extend(
     animation =
     {
       filename = "__k-ruins__/graphics/obelisk/obelisk.png",
-      width = 250,
-      height = 184,
-      line_length = 8,
-      frame_count = 32,
-      shift = { 2.0, -1.4375},
+      width = 500,
+      height = 320,
+      line_length = 4,
+      frame_count = 24,
+      shift = { 3.5, -2.8 },
       animation_speed = 0.25
     },
     animation_shadow =
@@ -117,7 +117,7 @@ data:extend(
       width = 1,
       height = 1,
       line_length = 8,
-      frame_count = 32,
+      frame_count = 24,
       shift = { 0.0, -0.0},
       animation_speed = 0.25
     },
