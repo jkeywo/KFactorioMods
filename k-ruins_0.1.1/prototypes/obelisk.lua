@@ -44,8 +44,8 @@ data:extend(
       }
     },
     order = "a-b-a",
-    collision_box = {{-2.4, -2.4}, {2.4, 2.4}},
-    selection_box = {{-3.0, -3.0}, {3.0, 3.0}},
+    collision_box = {{-1.2, -1.2}, {1.2, 1.2}},
+    selection_box = {{-1.4, -1.4}, {1.4, 1.4}},
     vehicle_impact_sound =  { filename = "__base__/sound/car-stone-impact.ogg", volume = 0.65 },
     working_sound =
     {
@@ -70,7 +70,7 @@ data:extend(
       height = 190,
       frame_count = 1,
       line_length = 1,
-      shift = { 0.5, -0.0},
+      shift = { 1.36, 0.78 },
     },
     energy_source =
     {
@@ -90,8 +90,8 @@ data:extend(
     max_health = 1000,
     corpse = "big-remnants",
     dying_explosion = "medium-explosion",
-    collision_box = {{-2.4, -2.4}, {2.4, 2.4}},
-    selection_box = {{-3.0, -3.0}, {3.0, 3.0}},
+    collision_box = {{-1.2, -1.2}, {1.2, 1.2}},
+    selection_box = {{-1.4, -1.4}, {1.4, 1.4}},
     allowed_effects = {"consumption", "speed", "pollution"},
     base_picture =
     {
@@ -108,7 +108,7 @@ data:extend(
       height = 320,
       line_length = 4,
       frame_count = 24,
-      shift = { 3.5, -2.8 },
+      shift = { 4.3125, -2.375 },
       animation_speed = 0.25
     },
     animation_shadow =

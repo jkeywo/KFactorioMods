@@ -72,6 +72,11 @@ local function update_buffs( delta )
 end
   
 Event.register(defines.events.on_entity_died, function(event)
+  local _global_data =  remote.call( "k-monuments", "get_global_data", "war-shrine" )
+  if not _global_data or not _global_data.upgrade_name then
+    return
+  end
+    
   if event.force.name == "player" and event.entity.force.name == "enemy" then
     global.war_shrine = global.war_shrine or { buff_amount = 0.0, buff_rank = 0 }
     -- incriment buff amount
@@ -114,8 +119,15 @@ Event.register(defines.events.on_tick, function(event)
     if global.war_shrine.buff_amount > 0.0 then
       if _player.gui.left.war_shrine then _player.gui.left.war_shrine.destroy() end
       
-      _player.gui.left.add { name="war_shrine", type="frame", caption=global.war_shrine.buff_amount.." = "..global.war_shrine.buff_rank }
+      local _rank_min = global.war_shrine.buff_rank == 0 and 0 or Config.war_shrine.kills_per_rank[global.war_shrine.buff_rank]
+      local _rank_max = Config.war_shrine.kills_per_rank[global.war_shrine.buff_rank + 1]
       
+      _player.gui.left.add { name="war_shrine", type="frame", direction="vertical" }
+      _player.gui.left.war_shrine.add { name="rank_icon", type="sprite", 
+              sprite=Config.war_shrine.rank_sprite[global.war_shrine.buff_rank] }
+      _player.gui.left.war_shrine.add { name="progress", type="progressbar", 
+              size= 32, value=(global.war_shrine.buff_amount-_rank_min)/(_rank_max-_rank_min) }
+            
     elseif _player.gui.left.war_shrine then
       _player.gui.left.war_shrine.destroy()
     end
