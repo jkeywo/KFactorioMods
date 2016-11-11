@@ -124,7 +124,7 @@ Event.register(defines.events.on_tick, function(event)
       
       _player.gui.left.add { name="war_shrine", type="frame", direction="vertical" }
       _player.gui.left.war_shrine.add { name="rank_icon", type="sprite", 
-              sprite=Config.war_shrine.rank_sprite[global.war_shrine.buff_rank] }
+              sprite="war_shrine_rank_"..global.war_shrine.buff_rank }
       _player.gui.left.war_shrine.add { name="progress", type="progressbar", 
               size= 32, value=(global.war_shrine.buff_amount-_rank_min)/(_rank_max-_rank_min) }
             

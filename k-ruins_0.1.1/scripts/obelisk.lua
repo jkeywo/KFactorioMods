@@ -1,5 +1,32 @@
 
 -- register data
+local _abilities = {
+  {
+    name="ability-teleport",
+    sprite="ability-teleport",
+    tooltip="Teleport to where you click.",
+    on_trigger=script.generate_event_name(),
+    cooldown=60*Time.SECOND,
+    type="target"
+  },
+  {
+    name="ability-bubble",
+    sprite="ability-bubble",
+    tooltip="Become invulnerable for 5 seconds.",
+    on_trigger=script.generate_event_name(),
+    cooldown=120*Time.SECOND,
+    type="activate"
+  },
+  {
+    name="ability-swarm",
+    sprite="ability-swarm",
+    tooltip="Summon a swarm of attack drones.",
+    on_trigger=script.generate_event_name(),
+    cooldown=240*Time.SECOND,
+    type="activate"
+  },
+}
+
 for i = 1, #Config.obelisks do
   local _data = {
     name = "obelisk-"..i,

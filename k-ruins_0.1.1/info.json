@@ -7,5 +7,5 @@
   "author": "John K",
   "contact": "jkeywo@yahoo.co.uk",
   "homepage": "",
-  "dependencies": ["base >= 0.14.0", "k-core >= 0.1.0"]
+  "dependencies": [ "base >= 0.14.0", "k-core >= 0.1.0", "Style >= 0.0.8" ]
 }

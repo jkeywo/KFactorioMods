@@ -8,6 +8,9 @@ require("stdlib.event.event")
 require("config")
 require("shared-data")
 
+if Config["abilities"] then
+  require("scripts.abilities")
+end
 if Config["composite-entities"] then
   require("scripts.composite-entities")
 end
@@ -84,4 +87,16 @@ remote.add_interface("k-worlds", {
   unlock_world = function( data )
     World.unlock( data )
   end
+ })
+
+remote.add_interface("k-abilities", {
+  register_ability = function( data )
+    Abilities.register_ability( data )
+  end,
+  add_ability = function( player, name )
+    Abilities.add_ability( player, name )
+  end,
+  remove_ability = function( player, name )
+    Abilities.remove_ability( player, name )
+  end,
  })
