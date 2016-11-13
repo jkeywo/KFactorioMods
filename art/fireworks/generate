@@ -1,0 +1,1 @@
+luajit generator.lua -l magick

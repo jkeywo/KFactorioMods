@@ -25,21 +25,6 @@ data:extend(
  },
 })
 
-for i = 0, 4 do
-  data:extend(
-  {
-    {
-      type="sprite",
-      name="war_shrine_rank_"..i,
-      filename = "__k-ruins__/graphics/sprites/war_shrine_"..i..".png",
-      priority = "extra-high-no-scale",
-      width = 32,
-      height = 32
-    }
-  }
-end
-
-
 if Config.obelisks then
   require("prototypes.obelisk")
 end

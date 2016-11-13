@@ -113,7 +113,7 @@ for _, _colour in pairs(colours) do
       -- capsule
       type = "capsule",
       name = _name,
-      icon = "__fireworks__/graphics/icon/".._name..".png",
+      icon = "__fireworks__/graphics/icons/".._name..".png",
       flags = {"goes-to-quickbar"},
       capsule_action =
       {
@@ -194,14 +194,7 @@ for _, _colour in pairs(colours) do
           acceleration = 0.05,
           action = _action,
           light = _stage.light,
-          animation = _stage.animation or
-          {
-            filename = "__fireworks__/graphics/projectiles/".._stage_name..".png",
-            frame_count = 1,
-            width = 64,
-            height = 64,
-            priority = "high"
-          },
+          animation = firework_sprites[_stage.sprite].animation(_colour.name),
         },
         {
           type = "explosion",

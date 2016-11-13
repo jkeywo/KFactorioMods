@@ -144,3 +144,8 @@ data:extend(
     }
   },
 })
+
+
+register_ability( data )
+
+

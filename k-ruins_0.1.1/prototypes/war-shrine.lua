@@ -1,5 +1,4 @@
 
-
 -- add data for entities
 data:extend(
 {
@@ -81,7 +80,6 @@ data:extend(
     crafting_speed = 1.0,
     ingredient_count = 1,
   },
-  
   {
     type = "tree",
     name = "war-shrine",
@@ -103,6 +101,18 @@ data:extend(
       }
     }
   },
-
 })
 
+for i = 0, 4 do
+  data:extend(
+  {
+    {
+      type="sprite",
+      name="war_shrine_rank_"..i,
+      filename = "__k-ruins__/graphics/war-shrine/war_shrine_"..i..".png",
+      priority = "extra-high-no-scale",
+      width = 32,
+      height = 32
+    }
+  }
+end
