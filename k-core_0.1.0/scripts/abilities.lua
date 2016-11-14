@@ -1,39 +1,30 @@
 
--- - TODO
--- don't assign a new quick bar
--- instead have a 'move ability' mode and a 'use ability mode' you can toggle between
--- 'move abilities' clears inventory of excess ability items and puts the right number back in place
--- 'use abilities' locks items in place with filters, removes items on cooldown, makes sure there are no changes in position
-
 Abilities = { data = {} }
 --{
 --  name="",
 --  icon="",
 --  cooldown=ticks,
 --  on_trigger=script.generate_event_name(),
---  type="activate" "target" "area" "toggle"
+--  type="activate" "target" "area"
 --}
 
-local function initalise_globals(player_or_force_or_nil)
-  global.abilities = global.abilities or { players={}, forces={} }
-  if player_or_force_or_nil then
-    if player_or_force_or_nil.quickbar_count then
-      global.abilities.forces[player_or_force_or_nil.name] = global.abilities.forces[player_or_force_or_nil.name] or {}
-    else
-      global.abilities.players[player.index] = global.abilities.players[player.index] or {}
-      global.abilities.forces[player_or_force_or_nil.force.name] = global.abilities.forces[player_or_force_or_nil.force.name] or {}
-    end
+local function internal_name(name) return "ability-"..name end
+
+local function initalise_globals(player_or_nil)
+  global.abilities = global.abilities or { players={} }
+  if player_or_nil then
+    global.abilities.players[player_or_nil.index] = global.abilities.players[player_or_nil.index] or { ability_mode=false }
   end
 end
 
 Abilities.register_ability = function( data )
-  Abilities.data["ability-"..data.name] = data
+  Abilities.data[internal_name(data.name)] = data
 end
 
 Abilities.add_ability = function( player_or_force, name )
   local add_to_player = function( player, name )
     initalise_globals(player)
-    global.abilities.players[player.index][name] = 0
+    global.abilities.players[player.index][internal_name(name)] = 0
     Abilities.refresh_quickbar(player)
   end
   
@@ -51,7 +42,7 @@ end
 Abilities.remove_ability = function( player_or_force, name )
   local remove_from_player = function( player, name )
     initalise_globals(player)
-    global.abilities.players[player.index][name] = nil
+    global.abilities.players[player.index][internal_name(name)] = nil
     Abilities.refresh_quickbar(player)
   end
   
@@ -66,47 +57,79 @@ Abilities.remove_ability = function( player_or_force, name )
   end
 end
 
-Abilities.refresh_quickbar = function( player )
-  initalise_globals( player )
-  
-  -- add a new quick bar if needed
-  if not global.abilities.forces[player.force.name].has_quickbar then
-    -- add quick bar to entire force
-    global.abilities.forces[player.force.name].has_quickbar = true
-    player.force.quickbar_count = player.force.quickbar_count + 1
-    for _, _player in pairs(player.force.players) do
-      -- put blank filters on the new quickbar
-      local _inventory = _player.get_inventory(defines.inventory.player_quickbar)
-      for i = 1, 12 do
-        _inventory.set_filter( (player.force.quickbar_count * 12) + i, "ability-empty" )
+Abilities.enter_organise_mode = function( player )
+  initalise_globals(player)
+  -- for each ability
+  local _quickbar = player.get_inventory(defines.inventory.player_quickbar)
+  local _inventory = player.get_inventory(defines.inventory.player_main)
+  for _name, ability in pairs(global.abilities.players[player.index]) do
+    local _found = false
+    for i = 1, #_quickbar do
+      if _quickbar[i].name == _name then
+        if _found then
+          _quickbar[i].clear()
+        else
+          _found = true
+        end
+      end
+      if not _found then
+        -- add to main inventory
+        _inventory.insert( {_name, 1} )
+      end
+      -- clear all filters
+      if _quickbar.get_filter(i) == _name then
+        _quickbar.set_filter(i)
       end
     end
   end
-  
-  -- filter quick bar
-  local _inventory = _player.get_inventory(defines.inventory.player_quickbar)
-  
-  -- find correct quick bar
-  
-  local _slot_end = (player.force.quickbar_count * 12)
-  local _slot = _slot_end - 11
-  for _name, _cooldown in pairs(global.abilities.players[player.index]) do
-    _inventory.set_filter( _slot )
-    local _stack = _inventory[_slot]
-    if _cooldown <= 0 then
-      _stack.set_stack({name="ability-".._name, count=1})
-    else
-      _stack.clear()
+end
+Abilities.enter_ability_mode = function( player )
+  initalise_globals(player)
+  local _quickbar = player.get_inventory(defines.inventory.player_quickbar)
+  local _inventory = player.get_inventory(defines.inventory.player_main)
+  for _name, _ability in pairs(global.abilities.players[player.index]) do
+     -- clear abilities from the inventory
+    for i = 1, #_inventory do
+      if _inventory[i].name == _name then
+        _inventory[i].clear()
+      end
     end
-    _inventory.set_filter( _slot, "ability-".._name )
-    _slot = _slot + 1
-  end
-  for i = _slot, _slot_end do
-    _inventory.set_filter( i, "ability-empty" )
+    for i = 1, #_quickbar do
+      if _quickbar[i].name == _name then
+        -- lock in filters
+        _quickbar.set_filter(i, _name)
+        -- remove abilities that are on cooldown
+        if _ability > 0 then
+          _quickbar[i].clear()
+        end
+      end
+    end
   end
 end
 
+Abilities.start_cooldown = function( player, data )
+  -- set cooldown
+  -- remove items
+  -- if no cooldown, call end_cooldown
+  
+end
+
+Abilities.end_cooldown = function( player, data )
+  -- make sure relevent item is in the filter slot
+  
+end
+
 Abilities.activate = function( player, data, target )
+  initalise_globals(player)
+  
+  if not global.abilities.players[player.index].ability_mode then
+      return
+  end
+  if not global.abilities.players[player.index]["ability-"..data.name]
+    or global.abilities.players[player.index]["ability-"..data.name] > 0 then
+    return
+  end
+  
   if data and data.on_trigger then
     game.raise_event( data.on_trigger, {
         player = player,
@@ -114,12 +137,14 @@ Abilities.activate = function( player, data, target )
         target = target
       })
   end
+  -- put on cooldown
+  Abilities.start_cooldown(player, data)
 end
 
 Event.register( defines.events.on_player_cursor_stack_changed, function(event)
-  -- activate/toggle abilities
+  -- activate abilities
   local _player = game.players[event.player_index]
-  if not _player.cursor_stack or not _player.cursor_stack.valid then
+  if (not _player.cursor_stack) or (not _player.cursor_stack.valid_for_read) then
     return
   end
   local _ability = Abilities.data[_player.cursor_stack.name]
@@ -133,7 +158,20 @@ end)
 
 Event.register( defines.events.on_built_entity, function(event)
   -- target abilities
-  
+  local _player = game.players[event.player_index]
+  if not _player.cursor_stack or not _player.cursor_stack.valid then
+    return
+  end
+  local _ability = Abilities.data[_player.cursor_stack.name]
+  if _ability then
+    if not _ability.type or _ability.type == "activate" then
+      -- destroy entity
+      _position = event.created_entity.position
+      event.created_entity.destroy()
+      -- activate ability at target point
+      Abilities.activate( _player, _ability, _position )
+    end
+  end
 end)
 
 Event.register( defines.events.on_player_selected_area, function(event)
@@ -141,7 +179,7 @@ Event.register( defines.events.on_player_selected_area, function(event)
 
 end)
 
-Event.register( defines.events.on_player_quickbar_inventory_changed, function(event)
-  -- make sure abilities are only in the correct place
-  
+Event.register( defines.events.on_tick, function(event)
+  -- update cooldowns
+  -- update coolodwn GUI
 end)

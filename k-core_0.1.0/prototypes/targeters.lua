@@ -1,10 +1,10 @@
 
-local function create_targeter(data, suffix)
-  local _name = "ability-"..data.name..(suffix or "")
+local function create_targeter(data)
+  local _name = "ability-"..data.name
   return {
     type = "item",
     name = _name,
-    icon = data.icon..(suffix or "")..".png",
+    icon = data.icon..".png",
     flags = {"goes-to-quickbar"},
     order = "a[".._name.."]",
     place_result = (data.type and data.type == "target" and _name) or nil,
@@ -12,8 +12,8 @@ local function create_targeter(data, suffix)
   }
 end
 
-local function create_selection_targeter(data, suffix)
-  local _name = "ability-"..data.name..(suffix or "")
+local function create_selection_targeter(data)
+  local _name = "ability-"..data.name
   return {
     type = "selection-tool",
     name = _name,
@@ -30,8 +30,8 @@ local function create_selection_targeter(data, suffix)
   }
 end
 
-local function create_dummy(data, suffix)
-  local _name = "ability-"..data.name..(suffix or "")
+local function create_dummy_entity(data)
+  local _name = "ability-"..data.name
   return {
     type = "decorative",
     name = _name,
@@ -60,23 +60,11 @@ function register_ability( data )
   elseif data.type == "target" then
     data:extend({
       create_targeter( data ),
-      create_dummy( data )
+      create_dummy_entity( data )
     })
   elseif data.type == "area" then
     data:extend({
       create_selection_targeter( data )
     })
-  elseif data.type == "toggle" then
-    data:extend({
-      create_targeter( data, "-on" ),
-      create_targeter( data, "-off" )
-    })
   end
 end
-
--- dummy ability for empty slots
-create_targeter({
-    name="empty",
-    icon="__k-core__/graphics/blank"
-  })
-

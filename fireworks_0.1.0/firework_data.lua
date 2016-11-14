@@ -11,46 +11,54 @@ colours = {
 }
 
 firework_sprites = {
+  ["none"] = {
+    animation = function(colour_name) return {
+        filename = "__fireworks__/graphics/blank.png",
+        frame_count = 1,
+        width = 32,
+        height = 32,
+        priority = "high"
+    } end,
+  },  
   ["star"] = {
-      animation = function(colour_name) return {
-            filename = "__fireworks__/graphics/projectiles/firework-star-"..colour_name..".png",
-            frame_count = 1,
-            width = 64,
-            height = 64,
-            priority = "high"
-      } end,
-    },
+    animation = function(colour_name) return {
+        filename = "__fireworks__/graphics/projectiles/firework-star-"..colour_name..".png",
+        frame_count = 1,
+        width = 64,
+        height = 64,
+        priority = "high"
+    } end,
+  },
   ["spark"] = {
-      animation = function(colour_name) return {
-            filename = "__fireworks__/graphics/projectiles/firework-spark-"..colour_name..".png",
-            frame_count = 1,
-            width = 32,
-            height = 32,
-            priority = "high"
-      } end,
-    },
+    animation = function(colour_name) return {
+        filename = "__fireworks__/graphics/projectiles/firework-spark-"..colour_name..".png",
+        frame_count = 1,
+        width = 32,
+        height = 32,
+        priority = "high"
+    } end,
+  },
   ["flare"] = {
-      animation = function(colour_name) return {
-            filename = "__fireworks__/graphics/projectiles/flare-"..colour_name..".png",
-            frame_count = 1,
-            width = 64,
-            height = 64,
-            priority = "high"
-      } end,
-    },
+    animation = function(colour_name) return {
+        filename = "__fireworks__/graphics/projectiles/flare-"..colour_name..".png",
+        frame_count = 1,
+        width = 64,
+        height = 64,
+        priority = "high"
+    } end,
+  },
 }
-
 
 fireworks = {
   {
     name = "flare",
     cooldown = 30,
     range = 50,
-    speed = 1,
+    speed = 0.3,
     ingredients = { {"grenade", 1} },
     stages =
     {
-      { suffix = "", sprite = "flare", light = {intensity = 0.1, size = 80 }, duration = 60 }
+      { suffix = "", sprite = "flare", light = {intensity = 0.3, size = 80 }, duration = 60 }
     },
     display = nil
   },
@@ -58,12 +66,12 @@ fireworks = {
     name = "firework-large", 
     cooldown = 30, 
     range = 50, 
-    speed = 1, 
+    speed = 0.3, 
     ingredients = { {"grenade", 3} },
     stages =
     {
-      { suffix = "", sprite = "star", light = { intensity = 0.1, size = 4 }, duration = 0.05, fragments = 24, fragment_distance = 12, fragment_speed = 3 },
-      { suffix = "-sparks", sprite = "spark", light = { intensity = 0.1, size = 4 }, duration = 0.05 }
+      { suffix = "", sprite = "star", light = { intensity = 0.9, size = 4 }, duration = 0.1, fragments = 24, fragment_distance = 12, fragment_speed = 0.3 },
+      { suffix = "-sparks", sprite = "spark", light = { intensity = 0.9, size = 4 }, duration = 0.1 }
     },
     display = {
       budget = 3
@@ -73,13 +81,13 @@ fireworks = {
     name = "firework-medium",
     cooldown = 30, 
     range = 50, 
-    speed = 1, 
+    speed = 0.3, 
     ingredients = { {"grenade", 2} },
     stages =
     {
-      { suffix = "", sprite = "star", light = { intensity = 0.1, size = 1 }, duration = 0.05, fragments = 8, fragment_distance = 8, fragment_speed = 2 },
-      { suffix = "-sub", sprite = "spark", light = { intensity = 0.1, size = 1 }, duration = 0.05, fragments = 6, fragment_distance = 4, fragment_speed = 3 },
-      { suffix = "-sparks", sprite = "spark", light = { intensity = 0.1, size = 1 }, duration = 0.05 }
+      { suffix = "", sprite = "star", light = { intensity = 0.9, size = 1 }, duration = 0.1, fragments = 8, fragment_distance = 8, fragment_speed = 0.3 },
+      { suffix = "-sub", sprite = "spark", light = { intensity = 0.9, size = 1 }, duration = 0.1, fragments = 6, fragment_distance = 4, fragment_speed = 0.4 },
+      { suffix = "-sparks", sprite = "spark", light = { intensity = 0.9, size = 1 }, duration = 0.1 }
     },
     display = {
       budget = 2
@@ -89,12 +97,12 @@ fireworks = {
     name = "firework-small", 
     cooldown = 30, 
     range = 50, 
-    speed = 1, 
+    speed = 0.3, 
     ingredients = { {"grenade", 1} },
     stages =
     {
-      { suffix = "", sprite = "star", light = { intensity = 0.1, size = 2 }, duration = 0.05, fragments = 12, fragment_distance = 8, fragment_speed = 4 },
-      { suffix = "-sparks", sprite = "spark", light = { intensity = 0.1, size = 2 }, duration = 0.05 }
+      { suffix = "", sprite = "star", light = { intensity = 0.9, size = 2 }, duration = 0.1, fragments = 12, fragment_distance = 8, fragment_speed = 0.4 },
+      { suffix = "-sparks", sprite = "spark", light = { intensity = 0.9, size = 2 }, duration = 0.1 }
     },
     display = {
       budget = 1
