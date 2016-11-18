@@ -25,7 +25,6 @@ Abilities.add_ability = function( player_or_force, name )
   local add_to_player = function( player, name )
     initalise_globals(player)
     global.abilities.players[player.index][internal_name(name)] = 0
-    Abilities.refresh_quickbar(player)
   end
   
   if player_or_force.quickbar_count then
@@ -43,7 +42,6 @@ Abilities.remove_ability = function( player_or_force, name )
   local remove_from_player = function( player, name )
     initalise_globals(player)
     global.abilities.players[player.index][internal_name(name)] = nil
-    Abilities.refresh_quickbar(player)
   end
   
   if player_or_force.quickbar_count then
@@ -61,11 +59,10 @@ Abilities.enter_organise_mode = function( player )
   initalise_globals(player)
   -- for each ability
   local _quickbar = player.get_inventory(defines.inventory.player_quickbar)
-  local _inventory = player.get_inventory(defines.inventory.player_main)
   for _name, ability in pairs(global.abilities.players[player.index]) do
     local _found = false
     for i = 1, #_quickbar do
-      if _quickbar[i].name == _name then
+      if _quickbar[i].valid_for_read and _quickbar[i].name == _name then
         if _found then
           _quickbar[i].clear()
         else
@@ -74,7 +71,7 @@ Abilities.enter_organise_mode = function( player )
       end
       if not _found then
         -- add to main inventory
-        _inventory.insert( {_name, 1} )
+        player.insert( {_name, 1} )
       end
       -- clear all filters
       if _quickbar.get_filter(i) == _name then
@@ -82,7 +79,10 @@ Abilities.enter_organise_mode = function( player )
       end
     end
   end
+  global.abilities.players[player.index].ability_mode = false
+  player.print("Ability: organise mode")
 end
+
 Abilities.enter_ability_mode = function( player )
   initalise_globals(player)
   local _quickbar = player.get_inventory(defines.inventory.player_quickbar)
@@ -90,12 +90,12 @@ Abilities.enter_ability_mode = function( player )
   for _name, _ability in pairs(global.abilities.players[player.index]) do
      -- clear abilities from the inventory
     for i = 1, #_inventory do
-      if _inventory[i].name == _name then
+      if _inventory[i].valid_for_read and _inventory[i].name == _name then
         _inventory[i].clear()
       end
     end
     for i = 1, #_quickbar do
-      if _quickbar[i].name == _name then
+      if _inventory[i].valid_for_read and _quickbar[i].name == _name then
         -- lock in filters
         _quickbar.set_filter(i, _name)
         -- remove abilities that are on cooldown
@@ -105,6 +105,8 @@ Abilities.enter_ability_mode = function( player )
       end
     end
   end
+  global.abilities.players[player.index].ability_mode = true
+  player.print("Ability: use mode")
 end
 
 Abilities.start_cooldown = function( player, data )
@@ -183,3 +185,15 @@ Event.register( defines.events.on_tick, function(event)
   -- update cooldowns
   -- update coolodwn GUI
 end)
+
+script.on_event("toggle-ability-mode", function(event)
+  local _player = game.players[event.player_index]
+  if global.abilities.players[_player.index].ability_mode then
+    Abilities.enter_organise_mode( _player )
+  else
+    Abilities.enter_ability_mode( _player )
+  end
+    
+end)
+
+

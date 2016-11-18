@@ -79,17 +79,21 @@ CompositeEntities.create_linked = function(entity)
       
       local _new_position = Tile.from_position( Position.add( _position, rotate_offset( _offset, _direction ) ) )
       local _parameters = { name = _child_name, direction  = _new_direction, position = _new_position, surface = _surface, force = _force }
-      if _child.type then
-        _parameters.type = _child.type
-      end
+      if _child.type then _parameters.type = _child.type end
+      if _child.force then _parameters.force = game.forces[_child.force] end
+      if _child.amount then _parameters.amount = _child.amount end
+      
       if not _child.can_fail or _surface.can_place_entity(_parameters) then
         local _new_child = _surface.create_entity(_parameters)
-        if _child.operable ~= nil then _new_child.operable = _child.operable end
-        if _child.lable ~= nil and _new_child.supports_backer_name() then _new_child.backer_name = _child.lable end
-        
-        if _data.keep_cluster then
-          table.insert( _new_global.entity_list, _new_child )
-          global.composite_entity_parent[_new_child.unit_number] = _new_global_index
+        if _new_child then
+          if _child.operable ~= nil then _new_child.operable = _child.operable end
+          if _child.lable ~= nil and _new_child.supports_backer_name() then _new_child.backer_name = _child.lable end
+          
+          if _data.keep_cluster then
+            table.insert( _new_global.entity_list, _new_child )
+            print(serpent.block(global.composite_entity_parent))
+            global.composite_entity_parent[_new_child.unit_number] = _new_global_index
+          end
         end
       end
     end

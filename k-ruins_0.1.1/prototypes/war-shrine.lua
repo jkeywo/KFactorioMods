@@ -103,9 +103,8 @@ data:extend(
   },
 })
 
-for i = 0, 4 do
-  data:extend(
-  {
+for i = 0, 3 do
+  data:extend({
     {
       type="sprite",
       name="war_shrine_rank_"..i,
@@ -114,5 +113,5 @@ for i = 0, 4 do
       width = 32,
       height = 32
     }
-  }
+  })
 end

@@ -1,33 +1,5 @@
 
--- register data
-local _abilities = {
-  {
-    name="ability-teleport",
-    sprite="ability-teleport",
-    tooltip="Teleport to where you click.",
-    on_trigger=script.generate_event_name(),
-    cooldown=60*Time.SECOND,
-    type="target"
-  },
-  {
-    name="ability-bubble",
-    sprite="ability-bubble",
-    tooltip="Become invulnerable for 5 seconds.",
-    on_trigger=script.generate_event_name(),
-    cooldown=120*Time.SECOND,
-    type="activate"
-  },
-  {
-    name="ability-swarm",
-    sprite="ability-swarm",
-    tooltip="Summon a swarm of attack drones.",
-    on_trigger=script.generate_event_name(),
-    cooldown=240*Time.SECOND,
-    type="activate"
-  },
-}
-
-for i = 1, #Config.obelisks do
+for i = 1, Config.obelisks do
   local _data = {
     name = "obelisk-"..i,
     localised_name="obelisk",
@@ -60,10 +32,8 @@ for i = 1, #Config.obelisks do
     local _restored = global.obelisk_modifiers[_id] or 0
     _restored = _restored + 1
     global.obelisk_modifiers[_id] = _restored
-    
-    local _modifier = _force[Config.obelisks[_restored].modifier]
-    _modifier = _modifier + Config.obelisks[_restored].amount
-    _force[Config.obelisks[_restored].modifier] = _modifier
+  
+    remote.call("k-abilities", "add_ability", _force, obelisk_abilities[_restored].name )
   end)
 
   Event.register( _data.upgrades["restored-obelisk"].on_removed, function(event)
@@ -74,14 +44,27 @@ for i = 1, #Config.obelisks do
     
     local _lost = global.obelisk_modifiers[_id]
     if _lost then
-      local _modifier = _force[Config.obelisks[_lost].modifier]
-      _modifier = _modifier - Config.obelisks[_lost].amount
-      _force[Config.obelisks[_lost].modifier] = _modifier
-      
+      remote.call("k-abilities", "remove_ability", _force, obelisk_abilities[_lost].name )
       global.obelisk_modifiers[_id] = _lost - 1
     end
   end)
 end
+
+Event.register( obelisk_abilities[1].on_trigger, function(event)
+    event.player.teleport(event.target)
+end)
+
+Event.register( obelisk_abilities[2].on_trigger, function(event)
+  global.bubbles = global.bubbles or {}
+  table.insert( global.bubbles, { entity = event.player.entity, timer = 300 } )
+  event.player.entity.damagable = false
+end)
+
+Event.register( obelisk_abilities[3].on_trigger, function(event)
+  for i = 1, 10 do
+    event.player.surface.create_entity { name = "destroyer", position = event.player.position, force = event.player.force }
+  end
+end)
 
 remote.call( "k-composite-entities", "register_composite", {
     base_entity = "obelisk-ruined",
@@ -91,12 +74,23 @@ remote.call( "k-composite-entities", "register_composite", {
     }
   })
 
+Event.register(defines.events.on_tick, function(event)
+  global.bubbles = global.bubbles or {}
+  for _index, _bubble in pairs(global.bubbles) do
+    _bubble.timer = _bubble.timer - 1
+    if _bubble.timer >= 0 then
+      _bubble.entity.damagable = true
+      table.remove(_index)
+    end
+  end
+end)
+
 -- reveal on research
 Event.register(defines.events.on_research_finished, function(event)
   local _ingredients = event.research.research_unit_ingredients
   for _, _ingredient in pairs(_ingredients) do
     if _ingredient.name == "science-pack-2" then
-      for i = 1, #Config.obelisks do
+      for i = 1, Config.obelisks do
         remote.call("k-monuments", "reveal_monument", "obelisk-"..i)
       end
     end

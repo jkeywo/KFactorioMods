@@ -89,14 +89,85 @@ local function firework_name(firework, colour) return firework.name.."-"..colour
 local function stage_name(firework, colour, stage) return firework_name(firework, colour).."-"..stage.name end
 
 -- templates
-
+local generate_sprites = {
+  ["none"] = {
+    animation = function(colour) return {
+        filename = "__fireworks__/graphics/blank.png",
+        frame_count = 1,
+        width = 32,
+        height = 32,
+        priority = "high"
+    } end,
+  },  
+  ["star"] = {
+    animation = function(colour) return {
+        filename = "__fireworks__/graphics/projectiles/firework-star-"..colour.name..".png",
+        frame_count = 1,
+        width = 64,
+        height = 64,
+        priority = "high"
+    } end,
+  },
+  ["spark"] = {
+    animation = function(colour) return {
+        filename = "__fireworks__/graphics/projectiles/firework-spark-"..colour.name..".png",
+        frame_count = 1,
+        width = 32,
+        height = 32,
+        priority = "high"
+    } end,
+  },
+  ["flare"] = {
+    animation = function(colour) return {
+        filename = "__fireworks__/graphics/projectiles/flare-"..colour.name..".png",
+        frame_count = 1,
+        width = 64,
+        height = 64,
+        priority = "high"
+    } end,
+  },
+}
 local generate_smoke = {
     ["sparks"] = function(colour, firework, stage)
-        return {}
-      end,
+      local _name = "smoke-"..stage_name(colour, firework, stage)
+      local _animation = {
+        width = 32,
+        height = 32,
+        line_length = 1,
+        frame_count = 1,
+        priority = "high",
+        animation_speed = 1.0 / 600.0,
+        filename = "__fireworks__/graphics/projectiles/firework-spark-"..colour.name..".png",
+      }
+      data:extend({
+        {
+          type = "smoke",
+          name = _name,
+          flags = {"not-on-map"},
+          duration = 600,
+          fade_away_duration = 2 * 60,
+          spread_duration = 10,
+          slow_down_factor = 0,
+          show_when_smoke_off = true,
+          color = { r = 0.1, g = 0.9, b = 0.7 }, --colour.rgb,
+          cyclic = true,
+          animation = _animation,
+          glow_animation = _animation,
+        }
+      })
+      return {
+        name = _name,
+        deviation = {0.15, 0.15},
+        frequency = 1,
+        position = {0, 0},
+        starting_frame = 1,
+        starting_frame_deviation = 0,
+        starting_frame_speed_deviation = 0
+      }
+    end,
     ["glitter"] = function(colour, firework, stage)
-        return {}
-      end,
+      return {}
+    end,
   }
 local generate_explosion = {
     ["flash"] = function(colour, firework, stage)
@@ -146,13 +217,15 @@ local generate_explosion = {
 -- sound - whizz
 -- sound - scream
   
-local function generate_projectile(colour, firework, stage, last_stage)
+local function generate_projectile(colour, firework, stage, next_stage)
   local _action = {}
   
-  table.insert(_action, generate_explosion)
+  if generate_explosion[stage.explosion] then
+    table.insert(_action, generate_explosion[stage.explosion](colour, firework, stage))
+  end
   
-  if not last_stage then
-    local _next_stage_name = stage_name(firework, colour, firework.stages[i+1])
+  if next_stage then
+    local _next_stage_name = stage_name(firework, colour, next_stage)
     table.insert( _action, 
       {
         type = "cluster",
@@ -171,16 +244,22 @@ local function generate_projectile(colour, firework, stage, last_stage)
   end
   
   -- check for smoke
+  local _smoke = nil
+  if generate_smoke[stage.smoke] then
+    _smoke = generate_smoke[stage.smoke](colour, firework, stage)
+  end
   -- check for flash
   
-  return {
+  local _data = {
       type = "projectile",
       name = stage_name(firework, colour, stage),
       flags = {"not-on-map"},
       acceleration = 0.005,
       action = _action,
-      animation = firework_sprites[stage.sprite].animation(colour.name)
+      snoke =  _smoke,
+      animation = generate_sprites[stage.sprite].animation(colour)
     }
+  return _data
 end
 
 -- fireworks by colour
@@ -248,7 +327,11 @@ for _, _colour in pairs(colours) do
     -- stages
     for i = 1, #_firework.stages do
       local _stage = _firework.stages[i]
-      data:extend({ generate_projectile(_colour, _firework, _stage, i == #_firework.stages) })
+      if i == #_firework.stages then
+        data:extend({ generate_projectile(_colour, _firework, _stage ) })
+      else
+        data:extend({ generate_projectile(_colour, _firework, _stage, _firework.stages[i+1] ) })
+      end
     end      
   end
 end

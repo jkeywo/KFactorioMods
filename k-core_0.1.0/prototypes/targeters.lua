@@ -4,7 +4,7 @@ local function create_targeter(data)
   return {
     type = "item",
     name = _name,
-    icon = data.icon..".png",
+    icon = data.sprite..".png",
     flags = {"goes-to-quickbar"},
     order = "a[".._name.."]",
     place_result = (data.type and data.type == "target" and _name) or nil,
@@ -17,7 +17,7 @@ local function create_selection_targeter(data)
   return {
     type = "selection-tool",
     name = _name,
-    icon = data.icon..".png",
+    icon = data.sprite..".png",
     flags = {"goes-to-quickbar"},
     order = "a[".._name.."]",
     stack_size = 2,
@@ -36,7 +36,7 @@ local function create_dummy_entity(data)
     type = "decorative",
     name = _name,
     flags = {"placeable-neutral", "placeable-off-grid", "not-on-map"},
-    icon = data.icon..".png",
+    icon = data.sprite..".png",
     order = "a-b-a",
     collision_box = {{-0.4, -0.4}, {0.4, 0.4}},
     selection_box = {{-0.4, -0.4}, {0.4, 0.4}},
@@ -44,7 +44,7 @@ local function create_dummy_entity(data)
     pictures =
     {
       {
-        filename = data.icon..".png",
+        filename = data.sprite..".png",
         width = 32,
         height = 32,
       },
@@ -52,19 +52,19 @@ local function create_dummy_entity(data)
   }
 end
 
-function register_ability( data )
-  if not data.type or data.type == "activate" then
+function register_ability( _data )
+  if not _data.type or _data.type == "activate" then
     data:extend({
-      create_targeter( data )
+      create_targeter( _data )
     })
-  elseif data.type == "target" then
+  elseif _data.type == "target" then
     data:extend({
-      create_targeter( data ),
-      create_dummy_entity( data )
+      create_targeter( _data ),
+      create_dummy_entity( _data )
     })
-  elseif data.type == "area" then
+  elseif _data.type == "area" then
     data:extend({
-      create_selection_targeter( data )
+      create_selection_targeter( _data )
     })
   end
 end

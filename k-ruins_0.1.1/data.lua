@@ -1,7 +1,8 @@
 
+require("stdlib.time")
+
 require("config")
 require("shared-data")
-require("styles.lua")
 
 data:extend(
 {
