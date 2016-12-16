@@ -6,7 +6,7 @@ for i = 1, Config.obelisks do
     entity_name = "obelisk-ruined",
     parent_mod_name = "k-ruins",
     position = {
-      offset = { 300, 1200 },
+      offset = { 30, 120 },
     },
     upgrades = {
       ["restored-obelisk"] = {

@@ -4,8 +4,8 @@ Config = {
   steam_geyser = true,
   munitions_manufactory = true,
   rocket_silo = true,
-  deep_mine = true,
-  war_shrine =
+  deep_mine = false,
+  war_shrine = 
   {
     rank_sprite = { 
       "__base__/graphics/icons/signal/signal_0.png",
