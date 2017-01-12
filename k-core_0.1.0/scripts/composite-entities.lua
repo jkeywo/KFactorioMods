@@ -36,6 +36,8 @@ CompositeEntities.register_composite = function( data )
 end
 
 CompositeEntities.create_linked = function(entity)
+  if not entity or not entity.valid then return end
+  
   global.composite_entity_parent = global.composite_entity_parent or {}
   global.composite_entities = global.composite_entities or {}
   
@@ -87,6 +89,8 @@ CompositeEntities.create_linked = function(entity)
         local _new_child = _surface.create_entity(_parameters)
         if _new_child then
           if _child.operable ~= nil then _new_child.operable = _child.operable end
+          if _child.minable ~= nil then _new_child.minable = _child.minable end
+          if _child.rotatable ~= nil then _new_child.rotatable = _child.rotatable end
           if _child.lable ~= nil and _new_child.supports_backer_name() then _new_child.backer_name = _child.lable end
           
           if _data.keep_cluster then
@@ -94,6 +98,8 @@ CompositeEntities.create_linked = function(entity)
             print(serpent.block(global.composite_entity_parent))
             global.composite_entity_parent[_new_child.unit_number] = _new_global_index
           end
+          
+          game.raise_event(defines.events.on_built_entity, {created_entity=_new_child, player_index=1})
         end
       end
     end
@@ -109,6 +115,8 @@ end
 CompositeEntities.destroy_linked = function(entity)
   global.composite_entity_parent = global.composite_entity_parent or {}
   global.composite_entities = global.composite_entities or {}
+  
+  if not entity or not entity.valid then return end
   
   local _parent_index = global.composite_entity_parent[entity.unit_number]
   if not _parent_index then return end

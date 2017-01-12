@@ -1,4 +1,3 @@
-
 local function create_targeter(data)
   local _name = "ability-"..data.name
   return {
@@ -68,3 +67,6 @@ function register_ability( _data )
     })
   end
 end
+
+register_ability( test_abilities[1] )
+register_ability( test_abilities[2] )

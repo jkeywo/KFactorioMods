@@ -1,13 +1,17 @@
-
+-- std lib
 require("stdlib.area.area")
 require("stdlib.area.chunk")
 require("stdlib.area.position")
 require("stdlib.area.tile")
 require("stdlib.event.event")
+-- k core lib
+require("scripts.scheduler")
 
+-- setup
 require("config")
 require("shared-data")
 
+-- modules
 if Config["abilities"] then
   require("scripts.abilities")
 end
@@ -34,7 +38,7 @@ remote.add_interface( "k-composite-entities", {
       CompositeEntities.register_composite( data )
     end,
     get_linked_entities = function( entity )
-      return global.composite_entity_parent[entity].entity_list
+      return global.composite_entity_parent[entity] and global.composite_entity_parent[entity].entity_list or nil
     end,
     get_composite_data = function( entity )
       return CompositeEntities.data[ global.composite_entity_parent[entity].type ]
@@ -99,4 +103,13 @@ remote.add_interface("k-abilities", {
   remove_ability = function( player, name )
     Abilities.remove_ability( player, name )
   end,
+ })
+
+remote.add_interface("k-scheduler", {
+    add_callback = function( delay, event_id, data, persistent )
+        Scheduler.add_callback( delay, event_id, data, persistent )
+    end,
+    remove_callback = function( event_id )
+        Scheduler.remove_callback( event_id )
+    end,
  })

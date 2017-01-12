@@ -1,10 +1,10 @@
 Config = {
   obelisks = 3,
-  world_tree = true,
-  steam_geyser = true,
-  munitions_manufactory = true,
-  rocket_silo = true,
-  deep_mine = false,
+  world_tree = false,
+  steam_geyser = false,
+  munitions_manufactory = false,
+  rocket_silo = false,
+  deep_mine = true,
   war_shrine = 
   {
     rank_sprite = { 

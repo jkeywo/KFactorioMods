@@ -57,6 +57,7 @@ Monument.get_data = function( name_or_data )
 end
 
 Monument.get_global_data = function( name_or_data )
+  global.monuments = global.monuments or {}
   local _data = Monument.get_data( name_or_data )
   return global.monuments[_data.name]
 end
@@ -87,7 +88,7 @@ end
 Monument.place = function( name_or_data )
   local _data = Monument.get_data( name_or_data )
   local _global_data = _data:get_global_data()
-  if not _global_data then game.print("ERROR: Missing global data in 'contains_monument'") return false end
+  if not _global_data then game.print("ERROR: Missing global data in 'place_monument'") return false end
   
   local _surface = _data:get_surface()
   local _surrounding_area = Position.expand_to_area( _global_data.position, _data.flooring_area or 4 )
@@ -96,7 +97,7 @@ Monument.place = function( name_or_data )
   local _obstructions = _surface.find_entities(_surrounding_area)
   for _, _obstruction in pairs(_obstructions) do
     CompositeEntities.destroy_linked( _obstruction )
-    _obstruction.destroy()
+    if _obstruction and _obstruction.valid then _obstruction.destroy() end
   end
   -- place down the default flooring
   local _tile_table = {}
@@ -112,12 +113,7 @@ Monument.place = function( name_or_data )
     position = _global_data.position, 
     force = game.players[1].force, -- TODO fix force, make the monuments claimable
   }
-  local _entities = CompositeEntities.create_linked(_monument)
-  for _, _entity in pairs(_entities) do
-    _entity.destructible = false
-    _entity.rotatable = false
-    _entity.minable = false
-  end
+  game.raise_event(defines.events.on_built_entity, {created_entity=_monument, player_index=1})
   
   _global_data.generated = true
 end
@@ -237,11 +233,7 @@ Monument.upgrade = function( name_or_data, upgrade_name )
     position = _global_data.position,
     force = _force
   }
-  local _entities = CompositeEntities.create_linked(_new_entity)
-  for _, _entity in pairs(_entities) do
-    _entity.rotatable = false
-    _entity.minable = false
-  end
+  game.raise_event(defines.events.on_built_entity, {created_entity=_new_entity, player_index=1})
   
   _global_data.upgrade_name = upgrade_name
   _global_data.entity_name = _upgrade_data.entity_name
@@ -286,12 +278,7 @@ Monument.downgrade = function( name_or_data, upgrade_name )
     position = _global_data.position,
     force = _force
   }
-  local _entities = CompositeEntities.create_linked(_new_entity)
-  for _, _entity in pairs(_entities) do
-    _entity.destructible = false
-    _entity.rotatable = false
-    _entity.minable = false
-  end
+  game.raise_event(defines.events.on_built_entity, {created_entity=_new_entity, player_index=1})
 
   _global_data.upgrade_name = nil
   _global_data.entity_name = _data.entity_name
