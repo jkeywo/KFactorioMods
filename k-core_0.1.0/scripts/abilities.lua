@@ -10,6 +10,12 @@ Abilities = { data = {} }
 
 local function internal_name(name) return "ability-"..name end
 
+local function ticks_to_time_string(ticks)
+  if ticks < Time.MINUTE then return math.ceil(ticks/Time.SECOND).."s" end
+  if ticks < Time.HOUR then return math.floor(ticks/(Time.MINUTE)).."m" end
+  return math.floor(ticks/(Time.HOUR)).."h"
+end
+
 local function initalise_globals(player_or_nil)
   global.abilities = global.abilities or { players={} }
   if player_or_nil then
@@ -24,8 +30,9 @@ end
 Abilities.add_ability = function( player_or_force, name )
   local add_to_player = function( player, name )
     initalise_globals(player)
-    if global.abilities.players[player.index] == nil then
-      global.abilities.players[player.index][internal_name(name)] = 0
+    local _name = internal_name(name)
+    if global.abilities.players[player.index][_name] == nil then
+      global.abilities.players[player.index][_name] = 0
     end
   end
   if type(player_or_force) == "LuaForce" then
@@ -113,19 +120,21 @@ Abilities.enter_ability_mode = function( player )
 end
 
 Abilities.start_cooldown = function( player, data )
+  player.clean_cursor()
+  
   -- set cooldown
-  global.abilities.players[player.index][data.name] = data.cooldown
+  global.abilities.players[player.index][internal_name(data.name)] = data.cooldown
   
   -- remove items
   local _quickbar = player.get_inventory(defines.inventory.player_quickbar)
   for i = 1, #_quickbar do
-    if _quickbar[i].valid_for_read and _quickbar[i].name == data.name then
+    if _quickbar[i].valid_for_read and _quickbar[i].name == internal_name(data.name) then
       _quickbar[i].clear()
     end
   end
   
   -- if no cooldown, call end_cooldown immediately
-  if global.abilities.players[player.index][data.name] == 0 then
+  if global.abilities.players[player.index][internal_name(data.name)] == 0 then
     Abilities.end_cooldown( player, data )
   end
 end
@@ -147,8 +156,8 @@ Abilities.activate = function( player, data, target )
   if not global.abilities.players[player.index].ability_mode then
       return
   end
-  if not global.abilities.players[player.index]["ability-"..data.name]
-    or global.abilities.players[player.index]["ability-"..data.name] > 0 then
+  if not global.abilities.players[player.index][internal_name(data.name)]
+    or global.abilities.players[player.index][internal_name(data.name)] > 0 then
     return
   end
   
@@ -170,11 +179,12 @@ Event.register( defines.events.on_player_cursor_stack_changed, function(event)
     return
   end
   local _ability = Abilities.data[_player.cursor_stack.name]
-  if _ability then
-    if not _ability.type or _ability.type == "activate" then
-      Abilities.activate( _player, _ability )
-      _player.clean_cursor()
+  if _ability and (not _ability.type or _ability.type == "activate") then
+    if global.abilities.players[_player.index][internal_name(_ability.name)] > 0 then
+      return
     end
+    
+    Abilities.activate( _player, _ability )
   end
 end)
 
@@ -182,6 +192,10 @@ Event.register( defines.events.on_built_entity, function(event)
 	local _player = game.players[event.player_index]
   local _ability = event.created_entity.valid and Abilities.data[event.created_entity.name]
   if _ability and (not _ability.type or _ability.type == "target") then
+    if global.abilities.players[_player.index][internal_name(_ability.name)] > 0 then
+      return
+    end
+    
     local _destination = event.created_entity.position
     _player.insert({name = event.created_entity.name, count = 1})
     event.created_entity.destroy()
@@ -203,17 +217,22 @@ Event.register( defines.events.on_tick, function(event)
     local _gui_frame = _player.gui.left["ability-cooldowns"]
     for _name, _cooldown in pairs(global.abilities.players[_player.index]) do
       -- update cooldowns
-      if type(_cooldown) == "number" and _cooldown > 0 then
-        global.abilities.players[player.index][_name] = _cooldown - 1
-        if not _gui_frame[_name] then
-          _gui_frame.add { name=_name.."-frame", type="flow", direction ="horizontal" }
-          _gui_frame[_name.."-frame"].add { name=_name.."-icon", type="sprite", sprite="item/".._name }
-          _gui_frame[_name.."-frame"].add { name=_name.."-cooldown", type="label", caption=_cooldown }
-        else
-          _gui_frame[_name.."-frame"][_name.."-cooldown"].caption=_cooldown
+      local _flowname = _name.."-frame"
+      if _name ~= "ability_mode" and _cooldown > 0 then
+        if _cooldown == 1 then
+          Abilities.end_cooldown(_player, Abilities.data[_name])
         end
-      elseif _gui_frame[_name] then
-        _gui_frame[_name].destroy()
+        
+        global.abilities.players[_player.index][_name] = _cooldown - 1
+        if not _gui_frame[_flowname] then
+          _gui_frame.add { name=_flowname, type="flow", direction ="horizontal" }
+          _gui_frame[_flowname].add { name=_name.."-icon", type="sprite", sprite="item/".._name }
+          _gui_frame[_flowname].add { name=_name.."-cooldown", type="label", caption=ticks_to_time_string(_cooldown) }
+        else
+          _gui_frame[_flowname][_name.."-cooldown"].caption = ticks_to_time_string(_cooldown)
+        end
+      elseif _gui_frame[_flowname] then
+        _gui_frame[_flowname].destroy()
       end
     end
   end
@@ -226,26 +245,4 @@ script.on_event("toggle-ability-mode", function(event)
   else
     Abilities.enter_ability_mode( _player )
   end
-    
 end)
-
--- TEST
-
-Event.register( test_abilities[1].on_trigger, function(event)
-    event.player.teleport(event.target)
-end)
-Event.register( test_abilities[2].on_trigger, function(event)
-  for i = 1, 10 do
-    event.player.surface.create_entity { name = "destroyer", position = event.player.position, force = event.player.force, target=event.player }
-  end
-end)
-
-Abilities.register_ability( test_abilities[1] )
-Abilities.register_ability( test_abilities[2] )
-
-Event.register( defines.events.on_player_joined_game, function(event)
-  Abilities.add_ability( game.players[event.player_index], "test-ability-teleport" )
-  Abilities.add_ability( game.players[event.player_index], "test-ability-swarm" )
-end)
-
-

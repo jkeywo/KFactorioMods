@@ -9,6 +9,7 @@ local _data = {
     upgrades = {
       ["restored-deep-mine"] = {
         entity_name = "deep-mine",
+        on_tick = script.generate_event_name(),
         attract_biters = {
           chance = 0.5,
           cycle = 90 * Time.SECOND,
@@ -38,11 +39,11 @@ remote.call( "k-composite-entities", "register_composite", {
         { entity_name = "loader", offset = { x=2, y=1 }, operable=false, type="output" },
       }
     })
-Event.register(defines.events.on_tick, function(event)
+  
+Event.register(_data.upgrades["restored-deep-mine"].on_tick, function(event)
   if event.tick % 60 == 1 then
     -- fill chests
-    local _mine = remote.call( "k-monuments", "get_monument_entity", "deep-mine" )
-    local _mine_parts = _mine and remote.call( "k-composite-entities", "get_linked_entities", "_mine" ) or nil
+    local _mine_parts = event.entity and remote.call( "k-composite-entities", "get_linked_entities", event.entity ) or nil
     if not _mine_parts then return end
     local index = 0
     for _, _entity in pairs(_mine_parts) do

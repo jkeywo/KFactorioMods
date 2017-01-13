@@ -43,6 +43,7 @@ Monument = {
 --        count = { 1, 30 },          -- biters per attack, either a fixed amountor lerps with evolution
 --      }
 --      on_placed = nil,              -- event handler, called when this upgrade is activated
+--      on_tick = nil,                -- event handler, called while this upgrade is active
 --      on_removed = nil,             -- event handler, called if destroyed
 --    }
 --  },
@@ -305,7 +306,7 @@ Event.register(defines.events.on_chunk_generated, function(event)
 end)
 
 Event.register(defines.events.on_tick, function(event)
-    -- TODO cache off current entity for monument
+  -- TODO cache off current entity for monument
   for _name, _ in  pairs(finalise_list) do
     Monument.finalise_registration( _name )
   end
@@ -335,6 +336,12 @@ Event.register(defines.events.on_tick, function(event)
         end
       end
     end
+    -- on_tick event
+    if _monument.upgrades[_global_data.upgrade_name].on_tick then
+      local _entity = _surface.find_entity(_global_data.entity_name, _position)
+      game.raise_event(_monument.upgrades[_global_data.upgrade_name].on_tick, { entity = _entity } )
+    end
+    -- attract biters
     if _global_data and _global_data.attract_biters_at == game.tick then
       local _biter_data = _monument.upgrades[_global_data.upgrade_name].attract_biters
       

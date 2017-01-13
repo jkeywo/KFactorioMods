@@ -1,6 +1,6 @@
 
 -- register data
-remote.call("k-monuments", "register_monument", {
+local _data = {
     name = "munitions-manufactory",
     entity_name = "munitions-manufactory-vines",
     parent_mod_name = "k-ruins",
@@ -10,6 +10,7 @@ remote.call("k-monuments", "register_monument", {
     upgrades = {
       ["restored-munitions-manufactory"] = {
         entity_name = "munitions-manufactory",
+        on_tick = script.generate_event_name(),
         attract_biters = {
           chance = 0.5,
           cycle = 120 * Time.SECOND,
@@ -17,7 +18,8 @@ remote.call("k-monuments", "register_monument", {
         }
       }
     }
-  })
+  }
+remote.call("k-monuments", "register_monument", _data)
 
 remote.call( "k-composite-entities", "register_composite", {
       base_entity = "munitions-manufactory-vines",
@@ -35,11 +37,10 @@ Event.register(defines.events.on_research_finished, function(event)
 end)
 
 -- if the monument has created any ammo, try and warp it to the player's inventories
-Event.register(defines.events.on_tick, function(event)
-  local _entity = remote.call("k-monuments", "get_monument_entity", "munitions-manufactory")
-  if _entity and _entity.get_output_inventory() then
-    if _entity.valid  then
-      local _from = _entity.get_output_inventory().find_item_stack("vanir-rounds-magazine")
+Event.register(_data.upgrades["restored-munitions-manufactory"].on_tick, function(event)
+  if event.entity and event.entity.get_output_inventory() then
+    if event.entity.valid  then
+      local _from = event.entity.get_output_inventory().find_item_stack("vanir-rounds-magazine")
       -- find an eligible player
       local _player = game.players[(game.tick % #game.players) + 1]
       if _from and _player then

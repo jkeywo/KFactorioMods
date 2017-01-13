@@ -4,6 +4,7 @@ require("stdlib.area.chunk")
 require("stdlib.area.position")
 require("stdlib.area.tile")
 require("stdlib.event.event")
+require("stdlib.time")
 -- k core lib
 require("scripts.scheduler")
 
