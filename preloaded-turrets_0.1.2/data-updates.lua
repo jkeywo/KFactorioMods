@@ -14,6 +14,8 @@ local function add_ammo( ammo_type )
   table.insert( _data_to_add, _subgroup_data )
 end
 local function add_turret( turret, ammo_type, ammo_count )
+  if not data.raw["item"][turret.name] then return end
+  
   local _name = "preloaded-"..turret.name.."-"..ammo_type.name.."-"..ammo_count
   
   local _tech_found = false
