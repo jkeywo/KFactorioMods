@@ -144,7 +144,3 @@ data:extend(
     }
   },
 })
-
-for _, _data in pairs(obelisk_abilities) do
-  register_ability( _data )
-end

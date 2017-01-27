@@ -1,9 +1,8 @@
 
 Config = {
-  ["abilities"] = true,
-  ["composite-entities"] = true,
+  ["character"] = true,
+  ["entity"] = true,
+  ["surface"] = false,
   ["missions"] = false,
-  ["monuments"] = true,
   ["units"] = false,
-  ["worlds"] = true,
 }

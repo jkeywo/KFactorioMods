@@ -1,30 +1,40 @@
+
 -- register data
-remote.call("k-monuments", "register_monument", {
+local _static_data = {
     name = "war-shrine",
     entity_name = "war-shrine-ruined",
-    parent_mod_name = "k-ruins",
     position = {
       offset = { 500, 800 },
-    },
+    }
+  }
+local _upgrade_data = {
+    name = "war-shrine-ruined",
     upgrades = {
       ["restored-war-shrine"] = {
         entity_name = "war-shrine",
-        attract_biters = {
-          chance = 0.5,
-          cycle = 600 * Time.SECOND,
-          count = { 10, 100 },
-        }
       }
     }
-  })
-
-remote.call( "k-composite-entities", "register_composite", {
+  }
+local _event_data = {
+    name = "war-shrine",
+    attract_biters = {
+      chance = 0.5,
+      cycle = 600 * Time.SECOND,
+      count = { 10, 100 },
+    }
+  }
+local _composite_data = {
       base_entity = "war-shrine-ruined",
       destroy_origional = false,
       component_entities = {
         { entity_name = "invisible-label-1x1", offset = { x=0, y=0 }, operable=false, lable="Ruined Shrine" }
       }
-    })
+    }
+
+remote.call( "k-static-entities", "register", _static_data )
+remote.call( "k-upgradable-entities", "register", _upgrade_data )
+remote.call( "k-entity-events", "register", _event_data )
+remote.call( "k-composite-entities", "register", _composite_data )
 
 -- global.war_shrine.buff_amount = 0.0
 -- global.war_shrine.buff_rank = 0
@@ -72,7 +82,7 @@ local function update_buffs( delta )
 end
   
 Event.register(defines.events.on_entity_died, function(event)
-  local _global_data =  remote.call( "k-monuments", "get_global_data", "war-shrine" )
+  local _global_data =  remote.call( "k-static-entities", "get_global_data", "war-shrine" )
   if not _global_data or not _global_data.upgrade_name then
     return
   end
