@@ -132,9 +132,15 @@ if Config["character"] then
     register = function( data )
       Buffs.register( data )
     end,
-    apply = function( name, player )
-      Buffs.data[name]:apply( player )
-    end
+    apply = function( name, player, charge )
+      Buffs.data[name]:apply( player, charge )
+    end,
+    remove = function( name, player, drain )
+      Buffs.data[name]:remove( player, drain )
+    end,
+    get_buff = function( name, player )
+      return Buffs.data[name]:get( player )
+    end,
    })
 end
 

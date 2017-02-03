@@ -9,7 +9,6 @@ Abilities = {
 --player/gear = {
 --  name = "use-ability-item-name",
 --  gear = nil, -- name of equipment that grants the ability
---  icon = "",
 --  energy = { 
 --    cost = 1.0, 
 --    reserve="reserve-name"
@@ -20,7 +19,7 @@ Abilities = {
 --reserve = {
 --  name="reserve-name",
 --  type="internal" "building" "equipment" "ammo",
---  icon = "",
+--  sprite = "",
 --  ammo = { ammo_list },
 --  recharge=1.0,
 --  max=60.0
@@ -37,7 +36,8 @@ Abilities = {
 --    ["name"] = { 
 --      ability_mode=false,
 --      abilities = { ["ability-name"] = ref_counter },
---      reserve = { ["reserve-name"] = 0.0 }
+--      reserve = { ["reserve-name"] = 0.0 },
+--      lockouts = { ["ability-name"] = till_tick }
 --    }
 --  },
 --  forces = {
@@ -83,7 +83,7 @@ local function for_each_ability( player, fn )
     fn(player, Abilities.player[_name] )
   end
   -- for each ability (force)
-  for _name, _ in pairs(global.abilities.forces[player.name].abilities) do
+  for _name, _ in pairs(global.abilities.forces[player.force.name].abilities) do
     fn(player, Abilities.player[_name] )
   end
   -- for each ability (gear)
@@ -119,7 +119,8 @@ local function initalise_player_globals(player)
   global.abilities.players[player.name] = global.abilities.players[player.name] or { 
     ability_mode=false,
     abilities = {},
-    reserve = {}
+    reserve = {},
+    lockouts = {}
   }
   initalise_force_globals(player.force)
 end
@@ -187,21 +188,21 @@ end
 -- ABILITY FUNCTIONS
 Ability = {}
 Ability.add = function(ability, player_or_force)
-  if type(player_or_force) == "LuaForce" then
+  if player_or_force == game.forces[player_or_force.name] then
     initalise_force_globals(player_or_force)
-    local ref_count = global.abilities.forces[player_or_force.name][ability.name]
+    local ref_count = global.abilities.forces[player_or_force.name].abilities[ability.name]
     if ref_count == nil then
-      global.abilities.forces[player_or_force.name][ability.name] = 1
+      global.abilities.forces[player_or_force.name].abilities[ability.name] = 1
     else
-      global.abilities.forces[player_or_force.name][ability.name] = ref_count + 1
+      global.abilities.forces[player_or_force.name].abilities[ability.name] = ref_count + 1
     end
   else
     initalise_player_globals(player_or_force)
-    local ref_count = global.abilities.players[player_or_force.name][ability.name]
+    local ref_count = global.abilities.players[player_or_force.name].abilities[ability.name]
     if ref_count == nil then
-      global.abilities.players[player_or_force.name][ability.name] = 1
+      global.abilities.players[player_or_force.name].abilities[ability.name] = 1
     else
-      global.abilities.players[player_or_force.name][ability.name] = ref_count + 1
+      global.abilities.players[player_or_force.name].abilities[ability.name] = ref_count + 1
     end
   end
 end
@@ -242,7 +243,9 @@ Ability.get_energy = function( ability, player )
   end
    
   local _reserve = Abilities.reserve[ ability.energy.reserve ]
-  return _reserve:get_energy(player)
+  if not _reserve then game.print("Missing reserve "..ability.energy.reserve) end
+  
+  return _reserve and _reserve:get_energy(player) or 0.0
 end
 Ability.add_energy = function( ability, player, energy )
   initalise_player_globals(player)
@@ -278,12 +281,15 @@ Ability.is_available = function( ability, player )
   return _cost <= _energy
 end
 
-Ability.activate = function( player, ability, target )
+Ability.activate = function( ability, player, target )
   initalise_globals(player)
   
   if not global.abilities.players[player.name].ability_mode then
       return
   end
+  if (global.abilities.players[player.name].lockouts[ability.name] or 0) > game.tick then
+    return
+  end    
   if not ability:is_available( player ) then
     return
   end
@@ -295,6 +301,10 @@ Ability.activate = function( player, ability, target )
         target = target
       })
   end
+  
+  -- lockout
+  global.abilities.players[player.name].lockouts[ability.name] = game.tick + (ability.lockout or 30)
+  
   -- spend energy
   player.clean_cursor()
   ability:remove_energy( player, ability.energy.cost )
@@ -329,8 +339,10 @@ Reserve.get_energy = function( reserve, player )
   -- check energy reserve
   if reserve.type == "building" then
     local _buildings = global.abilities.forces[ player.force.name ].reserve[reserve.name]
-    for _, _entity in pairs(_buildings) do
-      _energy = _energy + _entity.energy
+    if _buildings then
+      for _, _entity in pairs(_buildings) do
+        _energy = _energy + _entity.energy
+      end
     end
   elseif reserve.type == "equipment" then
     local _armour = player.get_inventory(defines.inventory.player_armor)[1]
@@ -366,9 +378,11 @@ Reserve.add_energy = function( reserve, player, energy )
   -- check energy reserve
   if reserve.type == "building" then
     local _buildings = global.abilities.forces[ player.force.name ].reserve[reserve.name]
-    local _energy_per = energy / #_buildings
-    for _, _entity in pairs(_buildings) do
-      _entity.energy = _entity.energy + _energy_per
+    if _buildings then
+      local _energy_per = energy / #_buildings
+      for _, _entity in pairs(_buildings) do
+        _entity.energy = _entity.energy + _energy_per
+      end
     end
   elseif reserve.type == "equipment" then
     local _armour = player.get_inventory(defines.inventory.player_armor)[1]
@@ -418,9 +432,11 @@ Reserve.remove_energy = function( reserve, player, energy )
   -- check energy reserve
   if reserve.type == "building" then
     local _buildings = global.abilities.forces[ player.force.name ].reserve[reserve.name]
-    local _energy_per = energy / #_buildings
-    for _, _entity in pairs(_buildings) do
-      _entity.energy = math.max( _entity.energy - _energy_per, 0.0 )
+    if _buildings then
+      local _energy_per = energy / #_buildings
+      for _, _entity in pairs(_buildings) do
+        _entity.energy = math.max( _entity.energy - _energy_per, 0.0 )
+      end
     end
   elseif reserve.type == "equipment" then
     local _armour = player.get_inventory(defines.inventory.player_armor)[1]
@@ -469,8 +485,10 @@ Reserve.get_max_energy = function( reserve, player )
   -- check energy reserve
   if reserve.type == "building" then
     local _buildings = global.abilities.forces[ player.force.name ].reserve[reserve.name]
-    for _, _entity in pairs(_buildings) do
-      _energy = _energy + _entity.electric_buffer_size 
+    if _buildings then
+      for _, _entity in pairs(_buildings) do
+        _energy = _energy + _entity.electric_buffer_size 
+      end
     end
   elseif reserve.type == "equipment" then
     local _armour = player.get_inventory(defines.inventory.player_armor)[1]
@@ -503,7 +521,7 @@ Event.register( defines.events.on_player_cursor_stack_changed, function(event)
   if (not _player.cursor_stack) or (not _player.cursor_stack.valid_for_read) then
     return
   end
-  local _ability = Abilities.force[_player.cursor_stack.name]
+  local _ability = Abilities.player[_player.cursor_stack.name]
   if _ability and (not _ability.type or _ability.type == "activate") then
     _ability:activate( _player )
   end
@@ -530,10 +548,10 @@ Event.register( defines.events.on_tick, function(event)
 
   for _, _player in pairs(game.players) do
     -- update cooldown GUI
-    if not _player.gui.left["ability-cooldowns"] then
-      _player.gui.left.add { name="ability-cooldowns", type="flow", direction ="vertical" }
+    if not _player.gui.top["ability-cooldowns"] then
+      _player.gui.top.add { name="ability-cooldowns", type="flow", direction ="horizontal" }
     end
-    local _gui_frame = _player.gui.left["ability-cooldowns"]
+    local _gui_frame = _player.gui.top["ability-cooldowns"]
     for _name, _ in pairs(global.abilities.players[_player.name].reserve) do
       local _reserve = Abilities.reserve[_name]
       local _energy = _reserve:get_energy(_player)
@@ -547,14 +565,25 @@ Event.register( defines.events.on_tick, function(event)
       
       -- update cooldowns
       local _flowname = _name.."-frame"
-      if not _gui_frame[_flowname] then
-        _gui_frame.add { name=_flowname, type="flow", direction ="horizontal" }
-        _gui_frame[_flowname].add { name=_name.."-icon", type="sprite", sprite="item/".._name }
-        _gui_frame[_flowname].add { name=_name.."-cooldown", type="progressbar", size = 32, value = _energy / _energy_max }
+      if _energy >= _energy_max then
+        if _gui_frame[_flowname] then _gui_frame[_flowname].destroy() end
       else
-        _gui_frame[_flowname][_name.."-cooldown"].value = _energy / _energy_max
+        if not _gui_frame[_flowname] then
+          _gui_frame.add { name=_flowname, type="flow", direction ="vertical" }
+          _gui_frame[_flowname].add { name=_name.."-icon", type="sprite", sprite=_reserve.sprite }
+          _gui_frame[_flowname].add { name=_name.."-cooldown", type="progressbar", size = "8", value = _energy / _energy_max }
+        else
+          _gui_frame[_flowname][_name.."-cooldown"].value = _energy / _energy_max
+        end
       end
     end
+    
+    for_each_ability( _player, function( player, ability) 
+      if ability:is_available(player) then
+        ability:make_available(player)
+      end
+    end)
+    
   end
 end)
 
@@ -563,9 +592,12 @@ Event.register({
       defines.events.on_robot_built_entity,
       defines.events.on_trigger_created_entity
     }, function(event)
+  if not event.created_entity or not event.created_entity.valid then return end
+  
   local _data = Abilities.building[event.created_entity.name]
   if _data then
     if _data.reserve then
+      global.abilities.forces[event.created_entity.force.name].reserve[_data.reserve] = global.abilities.forces[event.created_entity.force.name].reserve[_data.reserve] or {}
       global.abilities.forces[event.created_entity.force.name].reserve[_data.reserve][event.created_entity.unit_number] = event.created_entity
     end
     if _data.abilities then
@@ -595,7 +627,8 @@ end)
 
 script.on_event("toggle-ability-mode", function(event)
   local _player = game.players[event.player_index]
-  if global.abilities.players[_player.index].ability_mode then
+  initalise_player_globals(_player)
+  if global.abilities.players[_player.name].ability_mode then
     Abilities.enter_organise_mode( _player )
   else
     Abilities.enter_ability_mode( _player )

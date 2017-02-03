@@ -93,6 +93,7 @@ end)
 -- on create add to upgradable list and set type by data
 Event.register( { defines.events.on_built_entity, 
                   defines.events.on_robot_built_entity }, function(event)
+  if not event.created_entity or not event.created_entity.valid then return end
   local _data = UpgradableEntity.data[event.created_entity.name]
   if _data then
     global.upgradables = global.upgradables or {}
@@ -111,6 +112,8 @@ end)
 
 Event.register({defines.events.on_preplayer_mined_item,
                   defines.events.on_robot_pre_mined}, function(event)
+  if not event.entity.unit_number then return end
+  
   global.upgradables = global.upgradables or {}
   global.upgradables[event.entity.unit_number] = nil
 end)

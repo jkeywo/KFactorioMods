@@ -1,5 +1,5 @@
 local function create_targeter(data)
-  local _name = "ability-"..data.name
+  local _name = data.name
   return {
     type = "item",
     name = _name,
@@ -12,7 +12,7 @@ local function create_targeter(data)
 end
 
 local function create_selection_targeter(data)
-  local _name = "ability-"..data.name
+  local _name = data.name
   return {
     type = "selection-tool",
     name = _name,
@@ -30,7 +30,7 @@ local function create_selection_targeter(data)
 end
 
 local function create_dummy_entity(data)
-  local _name = "ability-"..data.name
+  local _name = data.name
   return {
     type = "decorative",
     name = _name,

@@ -64,6 +64,8 @@ end)
 
 Event.register( { defines.events.on_built_entity, 
                   defines.events.on_robot_built_entity }, function(event)
+  if not event.created_entity or not event.created_entity.valid then return end
+                  
   local _data = EntityEvent.get_data( event.created_entity.name  )
   if _data then
     global.entityevents = global.entityevents or {}

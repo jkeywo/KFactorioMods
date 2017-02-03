@@ -50,3 +50,26 @@ data:extend({
     _upgradable_item_1_3, _upgradable_recipe_1_3,
     _biter_entity, _biter_item, _biter_recipe,
   })
+
+-- Abilities
+require("shared")
+
+-- teleport (click to move)
+register_ability( abilities[1] )
+-- bubble (toggle to drain energy from buildings)
+register_ability( abilities[2] )
+
+data:extend({
+  {
+    type="sprite",
+    name="reserve-internal",
+    filename = "__core__/graphics/rename-small.png",
+    priority = "extra-high-no-scale",
+    width = 16,
+    height = 16,
+  }
+})
+
+
+
+
